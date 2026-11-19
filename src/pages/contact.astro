@@ -1,0 +1,617 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { site, locationLabel } from '@/config';
+import { breadcrumbSchema } from '@/lib/schema';
+
+const areas = ['Robotics', 'Embedded systems', 'Industrial automation', 'Not sure yet'];
+const engagementTypes = ['Consulting', 'Proof of concept', 'Prototype', 'Not sure yet'];
+const steps = [
+  { title: 'We read and reply', text: 'An engineer reads your note and replies with questions or a call invite.' },
+  { title: 'Discovery call', text: 'A focused 30-minute call to understand the problem, constraints and goals.' },
+  { title: 'Proposal', text: 'A short proposal for the first phase: scope, timeline, deliverables and cost.' },
+];
+
+const schema = [
+  breadcrumbSchema(Astro.site, [{ label: 'Contact', href: '/contact/' }]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: `Contact ${site.name}`,
+  },
+];
+---
+
+<BaseLayout
+  title="Contact — Start a Project"
+  description="Tell Deccan Robotics about your robotics, embedded or automation project. We’ll reply with questions, a first view on feasibility and the fastest path to a working prototype."
+  schema={schema}
+>
+  <PageHero
+    eyebrow="Contact"
+    title="Let’s build something <em>that works.</em>"
+    lead="Tell us about your project — even if it’s only an idea. The more context you share, the more useful our first conversation will be."
+    crumbs={[{ label: 'Contact' }]}
+    seed={9}
+  />
+
+  <section class="section theme-light" aria-label="Contact form">
+    <div class="container contact">
+      <form
+        class="form card"
+        data-contact
+        data-endpoint={site.formEndpoint}
+        data-email={site.email}
+        action={site.formEndpoint || `mailto:${site.email}`}
+        method="post"
+        enctype={site.formEndpoint ? 'multipart/form-data' : 'text/plain'}
+        novalidate
+      >
+        <div class="form__head">
+          <h2 class="h3">Project enquiry</h2>
+          <p class="muted">Fields marked <span aria-hidden="true">*</span><span class="visually-hidden">with an asterisk</span> are required.</p>
+        </div>
+
+        <div class="form__grid">
+          <div class="field">
+            <label for="f-name">Name <span aria-hidden="true">*</span></label>
+            <input class="input" id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="f-name-err" />
+            <p class="field-error" id="f-name-err" hidden>Please tell us your name.</p>
+          </div>
+          <div class="field">
+            <label for="f-email">Work email <span aria-hidden="true">*</span></label>
+            <input class="input" id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="f-email-err" />
+            <p class="field-error" id="f-email-err" hidden>Please enter a valid email address.</p>
+          </div>
+          <div class="field">
+            <label for="f-company">Company <span class="optional">(optional)</span></label>
+            <input class="input" id="f-company" name="company" type="text" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="f-phone">Phone <span class="optional">(optional)</span></label>
+            <input class="input" id="f-phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+        </div>
+
+        <fieldset class="field pills">
+          <legend>What area is it in?</legend>
+          <div class="pills__row">
+            {
+              areas.map((a, i) => (
+                <label class="pill">
+                  <input type="checkbox" name="area" value={a} id={`f-area-${i}`} />
+                  <span>{a}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="field pills">
+          <legend>How would you like to engage?</legend>
+          <div class="pills__row">
+            {
+              engagementTypes.map((e, i) => (
+                <label class="pill">
+                  <input type="radio" name="engagement" value={e} id={`f-eng-${i}`} />
+                  <span>{e}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <div class="form__grid">
+          <div class="field">
+            <label for="f-stage">Project stage</label>
+            <select class="input" id="f-stage" name="stage">
+              <option value="">Select…</option>
+              <option>Idea / early concept</option>
+              <option>Proof of concept exists</option>
+              <option>Prototype exists</option>
+              <option>In production</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-timeline">Timeline</label>
+            <select class="input" id="f-timeline" name="timeline">
+              <option value="">Select…</option>
+              <option>As soon as possible</option>
+              <option>1–3 months</option>
+              <option>3–6 months</option>
+              <option>Just exploring</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-message">Tell us about your project <span aria-hidden="true">*</span></label>
+          <textarea
+            class="input"
+            id="f-message"
+            name="message"
+            rows="6"
+            required
+            minlength="20"
+            aria-describedby="f-message-hint f-message-err"
+            placeholder="What are you building, what problem does it solve, and what would success look like?"
+          ></textarea>
+          <p class="form__hint" id="f-message-hint">Constraints help too: budget range, environment, standards, quantities.</p>
+          <p class="field-error" id="f-message-err" hidden>Please add a few sentences (at least 20 characters).</p>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" name="nda" value="Yes" />
+          <span>I’d like a mutual NDA before sharing details</span>
+        </label>
+
+        <!-- spam trap: real visitors never see or fill this -->
+        <div class="hp" aria-hidden="true">
+          <label for="f-website">Website</label>
+          <input id="f-website" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="form__foot">
+          <button type="submit" class="btn btn--primary form__submit" data-submit>
+            <span data-submit-label>Send message</span>
+            <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+          </button>
+          <p class="form__privacy">We only use your details to reply to your enquiry.</p>
+        </div>
+
+        <div class="form__status" role="status" aria-live="polite" data-status hidden></div>
+      </form>
+
+      <aside class="contact__aside" aria-label="Other ways to reach us">
+        <div class="contact__block">
+          <p class="mono contact__label">Email</p>
+          <a class="contact__email" href={`mailto:${site.email}`}>{site.email}</a>
+          {
+            site.phone && (
+              <>
+                <p class="mono contact__label">Phone</p>
+                <a class="contact__email" href={`tel:${site.phone.replace(/\s+/g, '')}`}>
+                  {site.phone}
+                </a>
+              </>
+            )
+          }
+          <p class="contact__meta">
+            <Icon name="map-pin" class="icon" />
+            {locationLabel} · working with teams worldwide
+          </p>
+          <p class="contact__meta">
+            <Icon name="timer" class="icon" />
+            We usually reply within two working days.
+          </p>
+        </div>
+
+        <div class="contact__block">
+          <p class="mono contact__label">What happens next</p>
+          <ol role="list" class="next">
+            {
+              steps.map((s, i) => (
+                <li>
+                  <span class="next__n mono">0{i + 1}</span>
+                  <div>
+                    <h3 class="next__title">{s.title}</h3>
+                    <p>{s.text}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+
+        <div class="contact__block contact__nda">
+          <Icon name="shield-check" class="icon" />
+          <p>
+            <strong>Confidential by default.</strong> Share only what you’re comfortable with — we can sign a
+            mutual NDA before going deeper.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('form[data-contact]');
+
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const endpoint = form.dataset.endpoint?.trim();
+    const email = form.dataset.email!;
+    const required = [...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]')];
+
+    const showError = (el: HTMLInputElement | HTMLTextAreaElement, show: boolean) => {
+      el.setAttribute('aria-invalid', String(show));
+      const err = document.getElementById(`${el.id}-err`);
+      if (err) err.hidden = !show;
+    };
+
+    required.forEach((el) =>
+      el.addEventListener('input', () => {
+        if (el.getAttribute('aria-invalid') === 'true') showError(el, !el.checkValidity());
+      }),
+    );
+
+    const setStatus = (kind: 'ok' | 'error' | 'info', html: string) => {
+      status.hidden = false;
+      status.dataset.kind = kind;
+      status.innerHTML = html;
+    };
+
+    const value = (data: FormData, key: string) => String(data.get(key) ?? '').trim();
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      let firstInvalid: HTMLElement | null = null;
+      for (const el of required) {
+        const ok = el.checkValidity() && el.value.trim().length > 0;
+        showError(el, !ok);
+        if (!ok && !firstInvalid) firstInvalid = el;
+      }
+      if (firstInvalid) {
+        firstInvalid.focus();
+        return;
+      }
+
+      const data = new FormData(form);
+      if (value(data, '_gotcha')) return; // bot
+
+      if (endpoint) {
+        submit.disabled = true;
+        submitLabel.textContent = 'Sending…';
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            body: data,
+            headers: { Accept: 'application/json' },
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          form.reset();
+          setStatus('ok', '<strong>Thanks — your message is on its way.</strong> We’ll get back to you shortly.');
+        } catch {
+          setStatus(
+            'error',
+            `<strong>Sorry, that didn’t send.</strong> Please try again, or email us directly at <a href="mailto:${email}">${email}</a>.`,
+          );
+        } finally {
+          submit.disabled = false;
+          submitLabel.textContent = 'Send message';
+        }
+        return;
+      }
+
+      // No form backend configured: hand the message to the visitor's email app.
+      const name = value(data, 'name');
+      const company = value(data, 'company');
+      const details = [
+        `Name: ${name}`,
+        `Email: ${value(data, 'email')}`,
+        company && `Company: ${company}`,
+        value(data, 'phone') && `Phone: ${value(data, 'phone')}`,
+        data.getAll('area').length > 0 && `Area: ${data.getAll('area').join(', ')}`,
+        value(data, 'engagement') && `Engagement: ${value(data, 'engagement')}`,
+        value(data, 'stage') && `Stage: ${value(data, 'stage')}`,
+        value(data, 'timeline') && `Timeline: ${value(data, 'timeline')}`,
+        value(data, 'nda') && 'NDA requested: Yes',
+      ].filter((line): line is string => Boolean(line));
+      const lines = [value(data, 'message'), '', '—', ...details];
+      const subject = `Project enquiry — ${name}${company ? ` (${company})` : ''}`;
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+      setStatus(
+        'info',
+        `<strong>Your email app should now open with your message ready to send.</strong> If nothing happened, email us at <a href="mailto:${email}">${email}</a>.`,
+      );
+    });
+  }
+</script>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-l);
+    padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+  }
+
+  .form__head {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .form__head .muted {
+    font-size: 0.9rem;
+  }
+
+  .form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+
+  .field label span[aria-hidden],
+  .form__head span[aria-hidden] {
+    color: var(--accent-text);
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .pills legend {
+    margin-bottom: 0.6rem;
+  }
+
+  .pills__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .pill {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .pill input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .pill span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.925rem;
+    font-weight: 500;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .pill:hover span {
+    border-color: color-mix(in srgb, var(--fg) 45%, transparent);
+  }
+
+  .pill input:checked + span {
+    background: var(--basalt-900);
+    border-color: var(--basalt-900);
+    color: #fff;
+  }
+
+  .pill input:checked + span::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-right: 0.55rem;
+    border-radius: 50%;
+    background: var(--laterite-500);
+  }
+
+  .pill input:focus-visible + span {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .form__hint {
+    font-size: 0.85rem;
+    color: var(--fg-subtle);
+  }
+
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .check input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--laterite-600);
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-m);
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--border);
+  }
+
+  .form__submit[disabled] {
+    opacity: 0.7;
+    cursor: progress;
+  }
+
+  .form__privacy {
+    font-size: 0.85rem;
+    color: var(--fg-subtle);
+  }
+
+  .form__status {
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    color: var(--fg-muted);
+  }
+
+  .form__status[data-kind='ok'] {
+    border-color: #2fb36e;
+    background: #eefaf3;
+  }
+
+  .form__status[data-kind='error'] {
+    border-color: #e5484d;
+    background: #fdf0f0;
+  }
+
+  .form__status :global(strong) {
+    color: var(--fg);
+  }
+
+  .form__status :global(a) {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .contact__aside {
+    display: grid;
+    gap: var(--space-l);
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .contact__block {
+    display: grid;
+    gap: var(--space-xs);
+    padding-bottom: var(--space-l);
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  .contact__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .contact__email {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 700;
+    font-stretch: 102%;
+    letter-spacing: -0.015em;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  .contact__email:hover {
+    color: var(--accent-text);
+  }
+
+  .contact__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--fg-muted);
+  }
+
+  .contact__meta :global(.icon) {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--accent-text);
+  }
+
+  .next {
+    display: grid;
+    gap: var(--space-m);
+    margin-top: var(--space-2xs);
+  }
+
+  .next li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-xs);
+  }
+
+  .next__n {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    font-size: var(--step--2);
+    color: var(--accent-text);
+  }
+
+  .next__title {
+    font-size: 1rem;
+    font-stretch: 100%;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    margin-bottom: 0.2rem;
+  }
+
+  .next p {
+    color: var(--fg-muted);
+    font-size: 0.95rem;
+  }
+
+  .contact__nda {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: var(--space-s);
+    border-bottom: 0;
+    padding: var(--space-m);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .contact__nda :global(.icon) {
+    width: 24px;
+    height: 24px;
+    color: #2fb36e;
+  }
+
+  .contact__nda p {
+    color: var(--fg-muted);
+    font-size: 0.95rem;
+  }
+
+  .contact__nda strong {
+    color: var(--fg);
+  }
+
+  @media (max-width: 1000px) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+
+    .contact__aside {
+      position: static;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .form__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

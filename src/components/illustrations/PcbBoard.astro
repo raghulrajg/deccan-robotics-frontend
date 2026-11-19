@@ -1,0 +1,244 @@
+---
+/**
+ * Embedded-systems illustration: a custom board with an MCU, sensors, radio,
+ * power and motor-driver blocks. Signals pulse along the copper traces.
+ */
+interface Props {
+  class?: string;
+  label?: string;
+}
+const { class: className, label = 'Custom circuit board with signals travelling along its traces' } =
+  Astro.props;
+
+// J1 bus: four traces from the MCU's west pins out to the edge connector.
+const busTraces = [0, 1, 2, 3].map((k) => {
+  const y0 = 136 + 12 * k;
+  const y1 = 140 + 20 * k;
+  const bend = 150 - (y1 - y0);
+  return `M198 ${y0}H150L${bend} ${y1}H60`;
+});
+
+const traces = [
+  ...busTraces,
+  'M212 118V104L200 92H128',
+  'M224 118V98L212 86H128',
+  'M256 118V100L268 88H360',
+  'M268 118V106L280 94H360',
+  'M212 202V226L196 242H140',
+  'M256 202V230L268 242H340',
+  'M268 202V220L280 232H340',
+  'M392 236H430',
+  'M392 248H430',
+  'M282 140H300',
+];
+
+// Which traces carry animated "packets", with timing.
+const pulses = [
+  { d: traces[0], dur: 2.6, delay: 0 },
+  { d: traces[2], dur: 2.6, delay: 1.3 },
+  { d: traces[4], dur: 2.2, delay: 0.4 },
+  { d: traces[6], dur: 1.8, delay: 0.9 },
+  { d: traces[7], dur: 1.8, delay: 1.8 },
+  { d: traces[9], dur: 2.4, delay: 0.2 },
+  { d: traces[12], dur: 1.4, delay: 0.6 },
+];
+
+const pinsH = Array.from({ length: 10 }, (_, i) => 204 + i * 7.6);
+const vias = [
+  [150, 136],
+  [150, 148],
+  [200, 92],
+  [268, 88],
+  [280, 94],
+  [196, 242],
+  [268, 242],
+  [280, 232],
+];
+---
+
+<svg class:list={['ill', 'pcb', className]} viewBox="0 0 480 320" role="img" aria-label={label}>
+  <rect x="10" y="10" width="460" height="300" rx="6" fill="var(--ill-bg)" stroke="var(--ill-line)"></rect>
+
+  <!-- board -->
+  <rect x="24" y="24" width="432" height="272" rx="14" class="pcb__board"></rect>
+  {
+    [
+      [44, 44],
+      [436, 44],
+      [44, 276],
+      [436, 276],
+    ].map(([x, y]) => (
+      <g>
+        <circle cx={x} cy={y} r="8" class="pcb__pad" />
+        <circle cx={x} cy={y} r="4" fill="var(--ill-bg)" />
+      </g>
+    ))
+  }
+
+  <!-- copper -->
+  <g class="pcb__copper">
+    {traces.map((d) => <path d={d} />)}
+  </g>
+  <g>
+    {vias.map(([x, y]) => <circle cx={x} cy={y} r="3.2" class="pcb__via" />)}
+  </g>
+
+  <!-- signal packets -->
+  <g class="pcb__pulses">
+    {
+      pulses.map((p) => (
+        <path d={p.d} pathLength="100" style={`animation-duration:${p.dur}s;animation-delay:${p.delay}s`} />
+      ))
+    }
+  </g>
+
+  <!-- MCU -->
+  <g>
+    {
+      pinsH.map((x) => (
+        <>
+          <rect x={x} y="110" width="3" height="8" class="pcb__pin" />
+          <rect x={x} y="202" width="3" height="8" class="pcb__pin" />
+        </>
+      ))
+    }
+    {
+      pinsH.map((x) => (
+        <>
+          <rect x="190" y={x - 80} width="8" height="3" class="pcb__pin" />
+          <rect x="282" y={x - 80} width="8" height="3" class="pcb__pin" />
+        </>
+      ))
+    }
+    <rect x="198" y="118" width="84" height="84" rx="4" class="pcb__chip"></rect>
+    <circle cx="208" cy="128" r="2.5" fill="var(--ill-strong)"></circle>
+    <text x="240" y="158" text-anchor="middle" class="ill__label ill__label--strong ill__label--lg">MCU</text>
+    <text x="240" y="172" text-anchor="middle" class="ill__label">CORTEX-M</text>
+  </g>
+
+  <!-- IMU -->
+  <rect x="92" y="74" width="36" height="36" rx="3" class="pcb__chip"></rect>
+  <text x="110" y="96" text-anchor="middle" class="ill__label">IMU</text>
+  <text x="92" y="66" class="ill__label ill__label--dim">U2</text>
+
+  <!-- radio module -->
+  <rect x="360" y="60" width="80" height="44" rx="3" class="pcb__module"></rect>
+  <path d="M367 70h8v8h-5v8h5v8h-5" fill="none" stroke="var(--laterite-500)" stroke-width="1.6" opacity="0.8"></path>
+  <text x="410" y="86" text-anchor="middle" class="ill__label">BLE·WiFi</text>
+  <text x="360" y="52" class="ill__label ill__label--dim">U3</text>
+
+  <!-- crystal -->
+  <rect x="300" y="134" width="24" height="12" rx="6" class="pcb__chip"></rect>
+  <text x="300" y="128" class="ill__label ill__label--dim">Y1</text>
+
+  <!-- edge connector J1 -->
+  <rect x="38" y="128" width="22" height="84" rx="2" class="pcb__module"></rect>
+  {[140, 160, 180, 200].map((y) => <circle cx="49" cy={y} r="4.5" class="pcb__pad" />)}
+  <text x="38" y="226" class="ill__label ill__label--dim">J1</text>
+
+  <!-- power -->
+  <rect x="100" y="228" width="40" height="30" rx="3" class="pcb__chip"></rect>
+  <circle cx="76" cy="243" r="12" class="pcb__module"></circle>
+  <text x="120" y="247" text-anchor="middle" class="ill__label">3V3</text>
+  <text x="100" y="274" class="ill__label ill__label--dim">PWR</text>
+
+  <!-- motor driver + output -->
+  <rect x="340" y="222" width="52" height="40" rx="3" class="pcb__chip"></rect>
+  <text x="366" y="246" text-anchor="middle" class="ill__label">DRV</text>
+  <rect x="430" y="224" width="14" height="36" rx="2" class="pcb__module"></rect>
+  <text x="340" y="278" class="ill__label ill__label--dim">U4 · M1</text>
+
+  <!-- decoupling caps -->
+  {
+    [
+      [176, 120],
+      [176, 194],
+      [292, 186],
+      [300, 158],
+    ].map(([x, y]) => <rect x={x} y={y} width="8" height="5" rx="1" class="pcb__cap" />)
+  }
+
+  <!-- status LED -->
+  <circle cx="420" cy="140" r="4" class="pcb__led"></circle>
+  <text x="430" y="144" class="ill__label ill__label--dim">D1</text>
+
+  <text x="44" y="300" class="ill__label">DR-EMB-01 · REV A</text>
+</svg>
+
+<style>
+  .pcb__board {
+    fill: #10171a;
+    stroke: rgb(120 200 170 / 0.18);
+  }
+
+  .pcb__pad {
+    fill: none;
+    stroke: #c98a52;
+    stroke-width: 2;
+    opacity: 0.75;
+  }
+
+  .pcb__copper path {
+    fill: none;
+    stroke: #c98a52;
+    stroke-width: 2.4;
+    stroke-linejoin: round;
+    opacity: 0.38;
+  }
+
+  .pcb__via {
+    fill: var(--ill-bg);
+    stroke: #c98a52;
+    stroke-width: 1.6;
+    opacity: 0.8;
+  }
+
+  .pcb__pulses path {
+    fill: none;
+    stroke: var(--laterite-400);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 9 91;
+    stroke-dashoffset: 100;
+    filter: drop-shadow(0 0 3px rgb(255 95 31 / 0.9));
+    animation-name: pcb-packet;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  .pcb__chip {
+    fill: #1d2228;
+    stroke: var(--ill-strong);
+  }
+
+  .pcb__module {
+    fill: #161b20;
+    stroke: var(--ill-line);
+  }
+
+  .pcb__pin {
+    fill: #9aa3b0;
+    opacity: 0.6;
+  }
+
+  .pcb__cap {
+    fill: #8a6a48;
+  }
+
+  .pcb__led {
+    fill: var(--signal);
+    animation: pcb-blink 1.6s steps(2, jump-none) infinite;
+  }
+
+  @keyframes pcb-packet {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes pcb-blink {
+    50% {
+      fill: #1b3a2a;
+    }
+  }
+</style>

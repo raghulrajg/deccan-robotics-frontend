@@ -1,0 +1,190 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Illustration from '@/components/ui/Illustration.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { services } from '@/data/services';
+import { href } from '@/lib/url';
+
+interface Props {
+  showHeader?: boolean;
+}
+const { showHeader = true } = Astro.props;
+---
+
+<section class="section theme-light" id="services" aria-labelledby="disciplines-title">
+  <div class="container">
+    {
+      showHeader && (
+        <SectionHeader
+          id="disciplines-title"
+          index="01"
+          eyebrow="What we do"
+          title="Three disciplines. <em>One integrated team.</em>"
+          lead="Hard problems live where mechanics, electronics and software meet. We cover the whole stack, so nothing falls through the gaps between vendors."
+          align="split"
+        />
+      )
+    }
+
+    <div class="disc-grid" data-reveal-stagger="90">
+      {
+        services.map((s, i) => (
+          <article class="disc card" data-reveal>
+            <div class="disc__media">
+              <Illustration name={s.illustration} />
+            </div>
+            <div class="disc__body">
+              <div class="disc__head">
+                <span class="icon-tile">
+                  <Icon name={s.icon} />
+                </span>
+                <span class="mono disc__n">0{i + 1} / 03</span>
+              </div>
+              <h3 class="h3 disc__title">
+                <a href={href(`/services/${s.slug}/`)} class="disc__link">
+                  {s.name}
+                </a>
+              </h3>
+              <p class="disc__summary">{s.summary}</p>
+              <ul class="check-list disc__list">
+                {s.highlights.map((h) => (
+                  <li>{h}</li>
+                ))}
+              </ul>
+              <span class="text-link disc__more" aria-hidden="true">
+                Explore {s.name.toLowerCase()}
+                <Icon name="arrow-right" strokeWidth={2} />
+              </span>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .disc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+
+  .disc {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    transition:
+      transform 0.4s var(--ease-out),
+      box-shadow 0.4s var(--ease-out),
+      border-color 0.3s;
+  }
+
+  .disc:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 30px 60px -30px rgb(17 19 23 / 0.35);
+  }
+
+  .disc__media {
+    padding: 0.6rem 0.6rem 0;
+    background: var(--surface);
+  }
+
+  .disc__media :global(.ill) {
+    border-radius: calc(var(--radius-l) - 6px);
+    background: #111418;
+  }
+
+  .disc__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding: var(--space-m) var(--space-m) var(--space-l);
+  }
+
+  .disc__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .disc__n {
+    font-size: var(--step--2);
+    color: var(--fg-subtle);
+    letter-spacing: 0.08em;
+  }
+
+  .disc__title {
+    margin-top: var(--space-2xs);
+  }
+
+  .disc__link {
+    text-decoration: none;
+  }
+
+  .disc__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  .disc__link:focus-visible {
+    outline: none;
+  }
+
+  .disc:has(.disc__link:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .disc__summary {
+    color: var(--fg-muted);
+  }
+
+  .disc__list {
+    margin-top: var(--space-2xs);
+  }
+
+  .disc__more {
+    margin-top: auto;
+    padding-top: var(--space-s);
+  }
+
+  .disc:hover .disc__more {
+    color: var(--accent-text);
+  }
+
+  .disc:hover .disc__more :global(svg) {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 1080px) {
+    .disc-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .disc {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: none;
+    }
+
+    .disc__media {
+      padding: 0.6rem;
+      display: grid;
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .disc {
+      grid-template-columns: 1fr;
+    }
+
+    .disc__media {
+      padding-bottom: 0;
+    }
+  }
+</style>

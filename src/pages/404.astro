@@ -1,0 +1,147 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { href } from '@/lib/url';
+
+// A tiny occupancy grid where the planner fails to find a path.
+const cells = Array.from({ length: 12 * 7 }, (_, i) => i);
+// The goal (46) is boxed in, so the planner really has no path.
+const walls = new Set([15, 27, 39, 51, 63, 29, 30, 31, 34, 45, 47, 58, 20, 68]);
+---
+
+<BaseLayout title="Page not found" description="The page you were looking for doesn’t exist." noindex>
+  <section class="nf theme-dark" aria-labelledby="nf-title">
+    <div class="nf__bg bg-grid" aria-hidden="true"></div>
+    <div class="container nf__layout">
+      <div class="nf__copy">
+        <p class="eyebrow">Error 404</p>
+        <h1 id="nf-title" class="display nf__title">Path not <span class="accent">found.</span></h1>
+        <p class="lead">
+          Our planner searched every node, but this page isn’t on the map. It may have moved, or the link may
+          be mistyped.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href={href('/')}>
+            Back to home
+            <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+          </a>
+          <a class="btn btn--secondary" href={href('/contact/')}>Contact us</a>
+        </div>
+      </div>
+
+      <div class="nf__map" aria-hidden="true">
+        <div class="nf__grid">
+          {
+            cells.map((c) => (
+              <span
+                class:list={[
+                  'nf__cell',
+                  { 'is-wall': walls.has(c), 'is-start': c === 25, 'is-goal': c === 46 },
+                ]}
+              />
+            ))
+          }
+        </div>
+        <p class="mono nf__readout">
+          <span>A* · status</span>
+          <span class="nf__fail">NO_PATH</span>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    display: grid;
+    align-items: center;
+    padding-block: calc(var(--header-h) + 3rem) 4rem;
+  }
+
+  .nf__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    mask-image: radial-gradient(80% 80% at 70% 40%, #000, transparent 75%);
+    -webkit-mask-image: radial-gradient(80% 80% at 70% 40%, #000, transparent 75%);
+  }
+
+  .nf__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+  }
+
+  .nf__copy {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-m);
+  }
+
+  .nf__title {
+    max-width: 10ch;
+  }
+
+  .nf__map {
+    padding: var(--space-m);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-l);
+    background: var(--basalt-850);
+  }
+
+  .nf__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 4px;
+  }
+
+  .nf__cell {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: rgb(255 255 255 / 0.04);
+  }
+
+  .nf__cell.is-wall {
+    background: repeating-linear-gradient(135deg, #313944 0 3px, #232931 3px 6px);
+  }
+
+  .nf__cell.is-start {
+    background: var(--laterite-500);
+  }
+
+  .nf__cell.is-goal {
+    background: transparent;
+    box-shadow: inset 0 0 0 2px var(--laterite-500);
+    animation: nf-blink 1.4s steps(2, jump-none) infinite;
+  }
+
+  .nf__readout {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-s);
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .nf__fail {
+    color: #ff6b6b;
+  }
+
+  @keyframes nf-blink {
+    50% {
+      box-shadow: inset 0 0 0 2px transparent;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .nf__layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

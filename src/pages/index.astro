@@ -1,0 +1,94 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import ToolsMarquee from '@/components/home/ToolsMarquee.astro';
+import Disciplines from '@/components/home/Disciplines.astro';
+import Engagements from '@/components/home/Engagements.astro';
+import Process from '@/components/home/Process.astro';
+import LayerStack from '@/components/home/LayerStack.astro';
+import WhyUs from '@/components/home/WhyUs.astro';
+import Industries from '@/components/home/Industries.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Faq from '@/components/ui/Faq.astro';
+import CtaBand from '@/components/ui/CtaBand.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { faqs } from '@/data/content';
+import { site } from '@/config';
+import { href } from '@/lib/url';
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${site.name} — Robotics, Embedded Systems & Automation Engineering`}
+  rawTitle
+  description="Deccan Robotics is an engineering studio for robotics, embedded systems and industrial automation. Consulting, proofs of concept and working prototypes — from idea to working machine."
+  schema={[faqSchema]}
+>
+  <Hero />
+  <ToolsMarquee />
+  <Disciplines />
+  <Engagements />
+  <Process />
+  <LayerStack />
+  <WhyUs />
+  <Industries />
+
+  <section class="section theme-light" aria-labelledby="faq-title">
+    <div class="container faq-layout">
+      <div class="faq-layout__side">
+        <SectionHeader id="faq-title" index="07" eyebrow="FAQ" title="Questions, answered." />
+        <div class="faq-layout__ask" data-reveal>
+          <p>Didn’t find what you were looking for?</p>
+          <a class="text-link" href={href('/contact/')}>
+            Ask us directly
+            <Icon name="arrow-right" strokeWidth={2} />
+          </a>
+        </div>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .faq-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: var(--space-xl) clamp(2rem, 1rem + 5vw, 6rem);
+    align-items: start;
+  }
+
+  .faq-layout__side {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  .faq-layout__ask {
+    display: grid;
+    justify-items: start;
+    gap: 0.4rem;
+    margin-top: calc(-1 * var(--space-m));
+    color: var(--fg-muted);
+  }
+
+  @media (max-width: 960px) {
+    .faq-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .faq-layout__side {
+      position: static;
+    }
+  }
+</style>

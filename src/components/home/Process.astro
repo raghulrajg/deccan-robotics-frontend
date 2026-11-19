@@ -1,0 +1,268 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { phases } from '@/data/content';
+
+interface Props {
+  index?: string;
+}
+const { index = '03' } = Astro.props;
+---
+
+<section class="section theme-dark process" aria-labelledby="process-title">
+  <div class="process__bg bg-grid" aria-hidden="true"></div>
+  <div class="container">
+    <SectionHeader
+      id="process-title"
+      index={index}
+      eyebrow="Process"
+      title="A process built around <em>decision gates.</em>"
+      lead="Hardware gets expensive when surprises arrive late. We front-load risk, show progress every week and give you a clean decision point at the end of every phase."
+      align="split"
+    />
+
+    <ol role="list" class="proc" data-reveal-stagger="120">
+      {
+        phases.map((p, i) => (
+          <li class="proc__phase" data-reveal>
+            <div class="proc__rail" aria-hidden="true">
+              <span class="proc__node mono">{p.n}</span>
+              <span class="proc__line" />
+              {p.gate ? (
+                <span class="proc__gate">
+                  <span class="proc__diamond" />
+                </span>
+              ) : (
+                <span class="proc__end">
+                  <Icon name="check" size={14} strokeWidth={3} />
+                </span>
+              )}
+            </div>
+            <div class="proc__body">
+              <div class="proc__titlerow">
+                <h3 class="h4 proc__name">{p.name}</h3>
+                <span class="chip">{p.duration}</span>
+              </div>
+              <p class="proc__text">{p.text}</p>
+              <p class="proc__out">
+                <span class="mono">Output</span>
+                {p.output}
+              </p>
+              {p.gate && (
+                <p class="proc__gatelabel mono">
+                  <span class="visually-hidden">Decision gate after phase {i + 1}:</span>
+                  <span aria-hidden="true">Gate ◆</span> {p.gate}
+                </p>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="proc__note" data-reveal>
+      <Icon name="shield-check" class="icon" />
+      <span>
+        <strong>Every gate is a clean exit.</strong> You keep the code, schematics, CAD and documentation
+        produced so far — no lock-in, no surprises.
+      </span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .process {
+    overflow: hidden;
+  }
+
+  .process__bg {
+    position: absolute;
+    inset: 0;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent);
+    pointer-events: none;
+  }
+
+  .process .container {
+    position: relative;
+  }
+
+  .proc {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 0;
+  }
+
+  .proc__phase {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--space-m);
+  }
+
+  .proc__rail {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 44px;
+  }
+
+  .proc__node {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--laterite-500);
+    background: var(--basalt-900);
+    color: var(--fg);
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 0 0 6px rgb(255 95 31 / 0.08);
+  }
+
+  .proc__line {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--laterite-500), rgb(255 255 255 / 0.18));
+  }
+
+  .proc__gate {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: none;
+  }
+
+  .proc__diamond {
+    width: 16px;
+    height: 16px;
+    transform: rotate(45deg);
+    border: 1.5px solid var(--fg);
+    background: var(--basalt-900);
+  }
+
+  .proc__end {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex: none;
+    margin-right: var(--space-m);
+    border-radius: 50%;
+    background: var(--signal);
+    color: var(--basalt-950);
+  }
+
+  .proc__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding-right: var(--space-l);
+  }
+
+  .proc__titlerow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .proc__text {
+    color: var(--fg-muted);
+    font-size: 0.975rem;
+  }
+
+  .proc__out {
+    display: grid;
+    gap: 0.2rem;
+    margin-top: var(--space-2xs);
+    padding: 0.75rem 0.9rem;
+    border-left: 2px solid var(--laterite-500);
+    background: rgb(255 255 255 / 0.03);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .proc__out .mono {
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .proc__gatelabel {
+    margin-top: auto;
+    padding-top: var(--space-s);
+    font-size: var(--step--1);
+    color: var(--fg);
+  }
+
+  .proc__gatelabel span[aria-hidden] {
+    color: var(--accent-text);
+  }
+
+  .proc__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-s);
+    max-width: 760px;
+    margin-top: var(--space-2xl);
+    color: var(--fg-muted);
+  }
+
+  .proc__note strong {
+    color: var(--fg);
+  }
+
+  .proc__note :global(.icon) {
+    width: 24px;
+    height: 24px;
+    margin-top: 0.1rem;
+    color: var(--signal);
+  }
+
+  @media (max-width: 1080px) {
+    .proc {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .proc__phase {
+      grid-template-columns: 44px 1fr;
+      grid-template-rows: none;
+      gap: var(--space-m);
+    }
+
+    .proc__rail {
+      flex-direction: column;
+      height: auto;
+      align-items: center;
+    }
+
+    .proc__line {
+      width: 1.5px;
+      height: auto;
+      min-height: 2rem;
+      background: linear-gradient(180deg, var(--laterite-500), rgb(255 255 255 / 0.18));
+    }
+
+    .proc__end {
+      margin: 0 0 0;
+    }
+
+    .proc__body {
+      padding: 0.45rem 0 var(--space-xl);
+    }
+
+    .proc__gatelabel {
+      margin-top: var(--space-2xs);
+      padding-top: 0;
+    }
+  }
+</style>

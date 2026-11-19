@@ -1,0 +1,16 @@
+---
+import AmrMap from '@/components/illustrations/AmrMap.astro';
+import PcbBoard from '@/components/illustrations/PcbBoard.astro';
+import ConveyorLine from '@/components/illustrations/ConveyorLine.astro';
+import type { Illustration } from '@/data/services';
+
+interface Props {
+  name: Illustration;
+  class?: string;
+}
+const { name, class: className } = Astro.props;
+---
+
+{name === 'amr' && <AmrMap class={className} />}
+{name === 'pcb' && <PcbBoard class={className} />}
+{name === 'conveyor' && <ConveyorLine class={className} />}

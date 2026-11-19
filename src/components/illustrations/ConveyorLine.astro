@@ -1,0 +1,231 @@
+---
+/**
+ * Industrial-automation illustration: a conveyor line with a vision station
+ * that inspects every part, a PLC cabinet and an HMI readout.
+ * Box motion, camera flashes and pass/fail tags share one timeline (8 s cycle,
+ * one part every 2 s) so they stay in sync without JavaScript.
+ */
+interface Props {
+  class?: string;
+  label?: string;
+}
+const { class: className, label = 'Conveyor line with a vision camera inspecting every part' } =
+  Astro.props;
+
+// Static positions double as the reduced-motion frame.
+const boxes = [0, 1, 2, 3].map((k) => ({
+  delay: -2 * k,
+  x: -40 + 140 * k,
+  ng: k === 2,
+  passed: k >= 2,
+}));
+const rollers = [110, 190, 270, 350];
+const bars = [14, 22, 18, 26, 20, 28, 24];
+---
+
+<svg class:list={['ill', 'cv', className]} viewBox="0 0 480 320" role="img" aria-label={label}>
+  <rect x="10" y="10" width="460" height="300" rx="6" fill="var(--ill-bg)" stroke="var(--ill-line)"></rect>
+
+  <!-- floor -->
+  <path d="M10 286H470" stroke="var(--ill-strong)"></path>
+
+  <!-- PLC cabinet -->
+  <g>
+    <rect x="30" y="44" width="92" height="112" rx="4" fill="#1a1f25" stroke="var(--ill-strong)"></rect>
+    <path d="M76 44v112" stroke="var(--ill-line)"></path>
+    <rect x="38" y="56" width="30" height="16" rx="2" fill="#0d1a14" stroke="rgb(61 220 132 / 0.35)"></rect>
+    <text x="53" y="67.5" text-anchor="middle" class="ill__label cv__run">RUN</text>
+    <circle cx="44" cy="88" r="3.5" class="cv__led cv__led--on"></circle>
+    <circle cx="56" cy="88" r="3.5" class="cv__led cv__led--blink"></circle>
+    <circle cx="68" cy="88" r="3.5" class="cv__led cv__led--amber"></circle>
+    {[104, 116, 128, 140].map((y) => <path d={`M86 ${y}h28`} stroke="var(--ill-line)" stroke-width="3" />)}
+    <text x="30" y="36" class="ill__label">PLC-01</text>
+  </g>
+
+  <!-- signal cable -->
+  <path d="M120 60H180Q190 60 190 50V30Q190 22 198 22H314Q322 22 322 30V58" class="cv__cable"></path>
+
+  <!-- HMI -->
+  <g>
+    <rect x="350" y="40" width="106" height="92" rx="4" fill="#12171c" stroke="var(--ill-strong)"></rect>
+    <text x="360" y="58" class="ill__label">OK</text>
+    <text x="446" y="58" text-anchor="end" class="ill__label ill__label--strong">1,284</text>
+    <text x="360" y="74" class="ill__label">NG</text>
+    <text x="446" y="74" text-anchor="end" class="ill__label ill__label--accent">3</text>
+    <g>
+      {bars.map((h, i) => <rect x={362 + i * 12} y={122 - h} width="8" height={h} rx="1" class="cv__bar" />)}
+    </g>
+  </g>
+
+  <!-- camera gantry -->
+  <rect x="318" y="58" width="8" height="228" fill="#232931" stroke="var(--ill-line)"></rect>
+  <rect x="232" y="58" width="94" height="8" fill="#232931" stroke="var(--ill-line)"></rect>
+  <path d="M240 100L192 206H288Z" class="cv__cone"></path>
+  <rect x="226" y="66" width="28" height="26" rx="3" fill="#1d2228" stroke="var(--ill-strong)"></rect>
+  <rect x="233" y="92" width="14" height="8" rx="1.5" fill="#313944"></rect>
+  <circle cx="240" cy="79" r="5" fill="none" stroke="var(--laterite-500)" stroke-width="1.5"></circle>
+  <text x="200" y="86" text-anchor="end" class="ill__label">CAM-01</text>
+
+  <!-- conveyor -->
+  <rect x="58" y="220" width="8" height="66" fill="#232931"></rect>
+  <rect x="236" y="220" width="8" height="66" fill="#232931"></rect>
+  <rect x="412" y="220" width="8" height="66" fill="#232931"></rect>
+  <rect x="24" y="206" width="432" height="14" rx="7" fill="#1b2026" stroke="var(--ill-strong)"></rect>
+  {rollers.map((x) => <circle cx={x} cy="213" r="4.5" fill="#313944" />)}
+  {
+    [31, 449].map((x) => (
+      <g transform={`translate(${x} 213)`}>
+        <circle r="6" fill="#313944" />
+        <path d="M-5 0h10M0 -5v10" stroke="var(--ill-bg)" stroke-width="1.5" class="cv__spokes" />
+      </g>
+    ))
+  }
+
+  <!-- parts -->
+  <g class="cv__parts">
+    {
+      boxes.map((b) => (
+        <g class="cv__box" style={`--x:${b.x}px;animation-delay:${b.delay}s`}>
+          <rect x="-17" y="-28" width="34" height="28" rx="2" fill="#c99a68" stroke="#7d5a36" />
+          <rect x="-4" y="-28" width="8" height="28" fill="#b0824f" opacity="0.8" />
+          <g
+            class:list={['cv__tag', { 'cv__tag--ng': b.ng }]}
+            style={`--tag-o:${b.passed ? 1 : 0};animation-delay:${b.delay}s`}
+          >
+            <circle cx="0" cy="-40" r="7" />
+            {b.ng ? (
+              <path d="M-2.5 -42.5l5 5m0 -5l-5 5" />
+            ) : (
+              <path d="M-3 -40l2 2 4 -4.5" />
+            )}
+          </g>
+        </g>
+      ))
+    }
+  </g>
+</svg>
+
+<style>
+  .cv__cable {
+    fill: none;
+    stroke: var(--laterite-500);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+    opacity: 0.7;
+    animation: cv-data 1s linear infinite;
+  }
+
+  .cv__cone {
+    fill: var(--laterite-500);
+    opacity: 0.08;
+    animation: cv-flash 2s linear infinite;
+  }
+
+  .cv__box {
+    transform: translate(var(--x), 206px);
+    animation: cv-move 8s linear infinite;
+  }
+
+  .cv__tag circle {
+    fill: var(--signal);
+  }
+
+  .cv__tag path {
+    fill: none;
+    stroke: #0d0f12;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .cv__tag {
+    opacity: var(--tag-o, 0);
+    animation: cv-tag 8s linear infinite;
+  }
+
+  .cv__tag--ng circle {
+    fill: #ff4d4f;
+  }
+
+  .cv__spokes {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: cv-spin 1.2s linear infinite;
+  }
+
+  .cv__led {
+    fill: #1e2a23;
+  }
+
+  .cv__led--on {
+    fill: var(--signal);
+  }
+
+  .cv__led--blink {
+    animation: cv-blink 0.8s steps(2, jump-none) infinite;
+  }
+
+  .cv__led--amber {
+    fill: var(--laterite-500);
+    animation: cv-blink 2s steps(2, jump-none) infinite;
+  }
+
+  .cv__run {
+    fill: var(--signal);
+    font-size: 8px;
+  }
+
+  .cv__bar {
+    fill: var(--laterite-500);
+    opacity: 0.75;
+  }
+
+  @keyframes cv-move {
+    from {
+      transform: translate(-40px, 206px);
+    }
+    to {
+      transform: translate(520px, 206px);
+    }
+  }
+
+  @keyframes cv-tag {
+    0%,
+    49% {
+      opacity: 0;
+    }
+    51%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes cv-flash {
+    0%,
+    100% {
+      opacity: 0.32;
+    }
+    18%,
+    82% {
+      opacity: 0.06;
+    }
+  }
+
+  @keyframes cv-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes cv-blink {
+    50% {
+      fill: #1e2a23;
+    }
+  }
+
+  @keyframes cv-data {
+    to {
+      stroke-dashoffset: -8;
+    }
+  }
+</style>

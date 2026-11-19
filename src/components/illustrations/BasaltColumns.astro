@@ -1,0 +1,136 @@
+---
+/**
+ * Columnar basalt — the hexagonal rock columns of the Deccan Traps —
+ * generated at build time as an oblique projection of hexagonal prisms.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const R = 30; // hexagon radius (plan view)
+const K = 0.56; // vertical squash for the oblique view
+const COLS = 8;
+const ROWS = 6;
+const X0 = 62;
+const Y0 = 150;
+const SQ3 = Math.sqrt(3);
+
+// Deterministic hash → [0, 1)
+const rand = (i: number, j: number) => {
+  const s = Math.sin(i * 127.1 + j * 311.7) * 43758.5453;
+  return s - Math.floor(s);
+};
+
+const highlighted = new Set(['3,1', '4,2', '2,3', '5,1']);
+const f = (n: number) => n.toFixed(1);
+
+type Column = { x: number; ground: number; h: number; hi: boolean };
+const columns: Column[] = [];
+for (let i = 0; i < COLS; i++) {
+  for (let j = 0; j < ROWS; j++) {
+    const px = i * 1.5 * R;
+    const py = j * SQ3 * R + (i % 2 ? (SQ3 * R) / 2 : 0);
+    // A plateau: tall towards the back-centre, stepping down to the front edges.
+    const centre = 1 - Math.abs(i - (COLS - 1) / 2) / COLS;
+    const back = 1 - j / ROWS;
+    // Quantised heights read as the stepped columns you see in the field.
+    const raw = 18 + 110 * (0.4 * centre + 0.35 * back) + 70 * rand(i, j);
+    const h = Math.round(raw / 14) * 14;
+    columns.push({ x: X0 + px, ground: Y0 + K * py, h, hi: highlighted.has(`${i},${j}`) });
+  }
+}
+columns.sort((a, b) => a.ground - b.ground || a.x - b.x);
+
+const angles = [0, 60, 120, 180, 240, 300].map((d) => (d * Math.PI) / 180);
+// Fit the viewBox to the generated geometry.
+let minY = Infinity;
+let maxY = -Infinity;
+for (const c of columns) {
+  minY = Math.min(minY, c.ground - c.h - K * R);
+  maxY = Math.max(maxY, c.ground + K * R);
+}
+const PAD = 8;
+const viewBox = `${X0 - R - PAD} ${f(minY - PAD)} ${f((COLS - 1) * 1.5 * R + 2 * R + 2 * PAD)} ${f(maxY - minY + 2 * PAD)}`;
+
+const shapes = columns.map((c) => {
+  const top = c.ground - c.h;
+  const v = angles.map((a) => [c.x + R * Math.cos(a), top + K * R * Math.sin(a)] as const);
+  const down = (p: readonly [number, number]) => [p[0], p[1] + c.h] as const;
+  const quad = (a: readonly [number, number], b: readonly [number, number]) =>
+    [a, b, down(b), down(a)].map((p) => `${f(p[0])},${f(p[1])}`).join(' ');
+  return {
+    hi: c.hi,
+    right: quad(v[0], v[1]),
+    front: quad(v[1], v[2]),
+    left: quad(v[2], v[3]),
+    top: v.map((p) => `${f(p[0])},${f(p[1])}`).join(' '),
+  };
+});
+---
+
+<svg class:list={['basalt', className]} viewBox={viewBox} role="img" aria-label="Hexagonal basalt columns, like those of the Deccan Traps">
+  <defs>
+    <linearGradient id="basalt-hi" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8a4f"></stop>
+      <stop offset="1" stop-color="#ff5f1f"></stop>
+    </linearGradient>
+  </defs>
+  {
+    shapes.map((s) => (
+      <g class:list={['col', { 'col--hi': s.hi }]}>
+        <polygon points={s.left} class="col__left" />
+        <polygon points={s.front} class="col__front" />
+        <polygon points={s.right} class="col__right" />
+        <polygon points={s.top} class="col__top" />
+      </g>
+    ))
+  }
+</svg>
+
+<style>
+  .basalt {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .col polygon {
+    stroke: rgb(255 255 255 / 0.08);
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+
+  .col__top {
+    fill: #2b323b;
+  }
+
+  .col__left {
+    fill: #1c2127;
+  }
+
+  .col__front {
+    fill: #15191e;
+  }
+
+  .col__right {
+    fill: #0f1215;
+  }
+
+  .col--hi .col__top {
+    fill: url(#basalt-hi);
+    stroke: #ffb38a;
+  }
+
+  .col--hi .col__left {
+    fill: #c2410c;
+  }
+
+  .col--hi .col__front {
+    fill: #a3360a;
+  }
+
+  .col--hi .col__right {
+    fill: #7c2a09;
+  }
+</style>

@@ -1,0 +1,410 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import BasaltColumns from '@/components/illustrations/BasaltColumns.astro';
+import Icon from '@/components/ui/Icon.astro';
+import CtaBand from '@/components/ui/CtaBand.astro';
+import type { IconName } from '@/lib/icons';
+import { site, locationLabel } from '@/config';
+import { href } from '@/lib/url';
+import { breadcrumbSchema } from '@/lib/schema';
+
+const values: { icon: IconName; title: string; text: string }[] = [
+  {
+    icon: 'target',
+    title: 'Candour',
+    text: 'If something won’t work, you’ll hear it from us early — with data, and with an alternative.',
+  },
+  {
+    icon: 'flask-conical',
+    title: 'Curiosity with rigour',
+    text: 'We love new ideas, and we test them properly. Measurements beat opinions.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Ownership',
+    text: 'We treat your project like our own product: on time, documented, and working in the real world.',
+  },
+  {
+    icon: 'wrench',
+    title: 'Craft',
+    text: 'Clean schematics, readable code, sensible tolerances. The details are the product.',
+  },
+];
+
+const facts: [string, string][] = [
+  ['Founded', String(site.foundingYear)],
+  ['Based in', locationLabel],
+  ['Works with', 'Teams worldwide'],
+  ['Disciplines', 'Robotics · Embedded · Automation'],
+];
+
+const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' }])];
+---
+
+<BaseLayout
+  title="About"
+  description="Deccan Robotics is a robotics, embedded systems and industrial automation engineering studio from India, helping companies turn ambitious ideas into working machines."
+  schema={schema}
+>
+  <PageHero
+    eyebrow="About us"
+    title="Engineering with <em>deep foundations.</em>"
+    lead={`${site.name} is a robotics, embedded systems and automation engineering studio from India. We help companies turn ambitious ideas into machines that work — and keep working.`}
+    crumbs={[{ label: 'About' }]}
+    split
+    seed={13}
+  >
+    <a class="btn btn--primary" href={href('/contact/')}>
+      Work with us
+      <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+    </a>
+    <a class="btn btn--secondary" href={href('/services/')}>What we do</a>
+    <div slot="visual" class="about-visual">
+      <BasaltColumns />
+      <p class="about-visual__caption mono">Fig. 1 — Columnar basalt, Deccan Traps</p>
+    </div>
+  </PageHero>
+
+  <!-- Name story -->
+  <section class="section theme-light" aria-labelledby="name-title">
+    <div class="container story">
+      <div class="story__side">
+        <p class="eyebrow" data-reveal>Why “Deccan”?</p>
+        <h2 id="name-title" class="h2" data-reveal style="--reveal-delay: 60ms">
+          Built like the plateau: <em class="accent">layer by layer.</em>
+        </h2>
+      </div>
+      <div class="story__body" data-reveal style="--reveal-delay: 120ms">
+        <p class="story__lede">
+          The Deccan Plateau is one of the oldest and most stable landforms on Earth. Much of it was built
+          from lava flows that cooled, layer upon layer, into the basalt of the Deccan Traps — “trap” comes
+          from the Swedish word for stairs, after the step-like hills those layers left behind. In places the
+          rock even cracked into near-perfect hexagonal columns.
+        </p>
+        <p>
+          We think great machines are built the same way: on solid foundations, one carefully engineered
+          layer at a time — mechanics, electronics, firmware, control, autonomy and cloud. Each layer has to
+          be sound on its own, and the joins between them are where projects succeed or fail.
+        </p>
+        <p>
+          The hexagon in our logo is a basalt column seen from above. The “D” inside it is a rotary joint.
+          Our name is a reminder of where we come from — and of how we work.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission -->
+  <section class="section theme-dark mission" aria-labelledby="mission-title">
+    <div class="container mission__grid">
+      <div class="mission__card" data-reveal>
+        <p class="mono mission__label">Mission</p>
+        <h2 id="mission-title" class="h3">
+          Make advanced robotics and automation practical for every company that builds, moves or grows
+          things — not only those with large R&amp;D budgets.
+        </h2>
+      </div>
+      <div class="mission__card" data-reveal style="--reveal-delay: 100ms">
+        <p class="mono mission__label">How</p>
+        <p class="h3 mission__how">
+          By proving ideas quickly with real hardware, and engineering the ones that work into machines you
+          can rely on.
+        </p>
+      </div>
+      <dl class="mission__facts" data-reveal style="--reveal-delay: 160ms">
+        {
+          facts.map(([k, v]) => (
+            <div>
+              <dt class="mono">{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="section theme-light" aria-labelledby="values-title">
+    <div class="container">
+      <SectionHeader
+        id="values-title"
+        eyebrow="What we value"
+        title="How we behave when <em>nobody is watching.</em>"
+        lead="Values are only useful if they change decisions. These are the ones we use on every project."
+        align="split"
+      />
+      <ul role="list" class="values" data-reveal-stagger="80">
+        {
+          values.map((v, i) => (
+            <li class="values__item" data-reveal>
+              <span class="mono values__n">0{i + 1}</span>
+              <Icon name={v.icon} class="values__icon" />
+              <h3 class="h3">{v.title}</h3>
+              <p>{v.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Careers / collaborate -->
+  <section class="section section--tight theme-light section--alt" aria-labelledby="join-title">
+    <div class="container join" data-reveal>
+      <div>
+        <p class="eyebrow">Join us</p>
+        <h2 id="join-title" class="h3 join__title">Engineers who love building real things — let’s talk.</h2>
+        <p class="muted">
+          We’re always glad to hear from mechanical, electronics, firmware and robotics engineers, and from
+          partners in fabrication, testing and manufacturing.
+        </p>
+      </div>
+      <a class="btn btn--dark" href={`mailto:${site.email}?subject=${encodeURIComponent('Working with Deccan Robotics')}`}>
+        <Icon name="mail" strokeWidth={2} />
+        Get in touch
+      </a>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .about-visual {
+    position: relative;
+  }
+
+  .about-visual::before {
+    content: '';
+    position: absolute;
+    inset: 15% 10% 5%;
+    background: radial-gradient(closest-side, rgb(255 95 31 / 0.18), transparent);
+    filter: blur(12px);
+  }
+
+  .about-visual :global(.basalt) {
+    position: relative;
+  }
+
+  .about-visual__caption {
+    margin-top: var(--space-s);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+    text-align: center;
+  }
+
+  .story {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+    gap: var(--space-xl) clamp(2rem, 1rem + 5vw, 6rem);
+    align-items: start;
+  }
+
+  .story__side {
+    display: grid;
+    gap: var(--space-s);
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  .story__side em {
+    font-style: normal;
+  }
+
+  .story__body {
+    display: grid;
+    gap: var(--space-m);
+    color: var(--fg-muted);
+    font-size: var(--step-1);
+    line-height: 1.65;
+  }
+
+  .story__lede {
+    color: var(--fg);
+    font-size: var(--step-2);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+
+  .mission__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+
+  .mission__card {
+    display: grid;
+    align-content: start;
+    gap: var(--space-m);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+
+  .mission__card:first-child {
+    background:
+      radial-gradient(100% 120% at 0% 100%, rgb(255 95 31 / 0.22), transparent 60%),
+      var(--surface);
+  }
+
+  .mission__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+
+  .mission__card .h3 {
+    font-stretch: 102%;
+    line-height: 1.3;
+  }
+
+  .mission__how {
+    color: var(--fg-muted);
+  }
+
+  .mission__facts {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-l);
+  }
+
+  .mission__facts div {
+    display: grid;
+    gap: 0.35rem;
+    padding: var(--space-m) var(--space-l);
+  }
+
+  .mission__facts div + div {
+    border-left: 1px solid var(--border);
+  }
+
+  .mission__facts dt {
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .mission__facts dd {
+    font-weight: 600;
+  }
+
+  .values {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--border-strong);
+  }
+
+  .values__item {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-s);
+    padding: var(--space-l) var(--space-m) var(--space-l) 0;
+  }
+
+  .values__item + .values__item {
+    padding-left: var(--space-m);
+    border-left: 1px solid var(--border);
+  }
+
+  .values__n {
+    font-size: var(--step--1);
+    color: var(--fg-subtle);
+  }
+
+  .values__item :global(.values__icon) {
+    width: 30px;
+    height: 30px;
+    color: var(--accent-text);
+    stroke-width: 1.5;
+  }
+
+  .values__item p {
+    color: var(--fg-muted);
+  }
+
+  .join {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-l);
+  }
+
+  .join > div {
+    display: grid;
+    gap: var(--space-xs);
+    max-width: 640px;
+  }
+
+  @media (max-width: 1000px) {
+    .story {
+      grid-template-columns: 1fr;
+    }
+
+    .story__side {
+      position: static;
+    }
+
+    .values {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .values__item:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .values__item:nth-child(n + 3) {
+      border-top: 1px solid var(--border);
+    }
+
+    .mission__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mission__facts div:nth-child(3) {
+      border-left: 0;
+    }
+
+    .mission__facts div:nth-child(n + 3) {
+      border-top: 1px solid var(--border);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .mission__grid,
+    .values {
+      grid-template-columns: 1fr;
+    }
+
+    .values__item,
+    .values__item + .values__item {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .values__item + .values__item {
+      border-top: 1px solid var(--border);
+    }
+
+    .mission__facts {
+      grid-template-columns: 1fr;
+    }
+
+    .mission__facts div + div {
+      border-left: 0;
+      border-top: 1px solid var(--border);
+    }
+  }
+</style>

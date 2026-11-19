@@ -1,0 +1,199 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { principles } from '@/data/content';
+import { site, locationLabel } from '@/config';
+
+interface Props {
+  index?: string;
+}
+const { index = '05' } = Astro.props;
+
+const datasheet: [string, string][] = [
+  ['Company', site.name],
+  ['Disciplines', 'Mechanical · Electronics · Firmware · Software · Controls'],
+  ['Engagements', 'Consulting · Proof of concept · Prototyping · Retainer'],
+  ['Typical POC', '3–6 weeks'],
+  ['Platforms', 'ROS 2 · STM32 · ESP32 · nRF · Jetson · PLCs'],
+  ['Based in', `${locationLabel} — working with teams worldwide`],
+];
+---
+
+<section class="section theme-light" aria-labelledby="why-title">
+  <div class="container">
+    <SectionHeader
+      id="why-title"
+      index={index}
+      eyebrow="Why Deccan Robotics"
+      title="Engineering partners, <em>not a black box.</em>"
+      lead="We work the way we would want an engineering partner to work with us: openly, in small verifiable steps, with nothing hidden in the handover."
+      align="split"
+    />
+
+    <div class="why">
+      <ul role="list" class="why__grid" data-reveal-stagger="70">
+        {
+          principles.map((p) => (
+            <li class="why__item" data-reveal>
+              <span class="icon-tile">
+                <Icon name={p.icon} />
+              </span>
+              <h3 class="h4">{p.title}</h3>
+              <p>{p.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <aside class="sheet ticks" aria-label="Company datasheet" data-reveal>
+        <div class="sheet__head mono">
+          <span>Datasheet</span>
+          <span>DR-001 · Rev {site.foundingYear}</span>
+        </div>
+        <dl class="sheet__rows">
+          {
+            datasheet.map(([k, v]) => (
+              <div class="sheet__row">
+                <dt class="mono">{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))
+          }
+          <div class="sheet__row">
+            <dt class="mono">Status</dt>
+            <dd class="sheet__status">
+              <span class="led" aria-hidden="true"></span> Accepting new projects
+            </dd>
+          </div>
+        </dl>
+        <div class="sheet__foot mono" aria-hidden="true">
+          <span>■ ■ ■ □ □</span>
+          <span>Deccan Robotics · {locationLabel}</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(2rem, 1rem + 3vw, 4rem);
+  }
+
+  .why__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xl) var(--space-l);
+  }
+
+  .why__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+  }
+
+  .why__item .icon-tile {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .why__item p {
+    color: var(--fg-muted);
+  }
+
+  .sheet {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+    background: var(--basalt-900);
+    color: #f3f1ec;
+    border-radius: var(--radius-m);
+    box-shadow: 0 40px 70px -40px rgb(17 19 23 / 0.6);
+    --accent: var(--laterite-500);
+  }
+
+  .sheet__head,
+  .sheet__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8d96a3;
+  }
+
+  .sheet__head {
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  }
+
+  .sheet__head span:first-child {
+    color: var(--laterite-400);
+  }
+
+  .sheet__foot {
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    letter-spacing: 0.06em;
+  }
+
+  .sheet__rows {
+    padding: 0.5rem 1.25rem;
+  }
+
+  .sheet__row {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed rgb(255 255 255 / 0.1);
+  }
+
+  .sheet__row:last-child {
+    border-bottom: 0;
+  }
+
+  .sheet__row dt {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8d96a3;
+    padding-top: 0.15rem;
+  }
+
+  .sheet__row dd {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .sheet__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  @media (max-width: 1080px) {
+    .why {
+      grid-template-columns: 1fr;
+    }
+
+    .sheet {
+      position: relative;
+      top: auto;
+      max-width: 560px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .why__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-l);
+    }
+
+    .sheet__row {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+</style>

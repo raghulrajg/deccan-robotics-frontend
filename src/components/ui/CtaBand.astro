@@ -1,0 +1,86 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import Contours from '@/components/ui/Contours.astro';
+import { site } from '@/config';
+import { href } from '@/lib/url';
+
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = 'Have a machine in mind?',
+  text = 'Tell us what you’re building. We’ll come back with questions, a first view on feasibility and the fastest path to a working prototype.',
+} = Astro.props;
+---
+
+<section class="cta theme-dark" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta__panel" data-reveal>
+      <Contours class="cta__contours" width={1200} height={500} cx={1050} cy={420} rings={12} base={30} gap={34} seed={3} highlight={5} />
+      <div class="cta__content">
+        <p class="eyebrow">Start a project</p>
+        <h2 id="cta-title" class="h1 cta__title">{title}</h2>
+        <p class="lead cta__text">{text}</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href={href('/contact/')}>
+            Start a project
+            <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+          </a>
+          <a class="btn btn--secondary" href={`mailto:${site.email}`}>
+            <Icon name="mail" strokeWidth={2} />
+            {site.email}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+    background: var(--basalt-900);
+  }
+
+  .cta__panel {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(2.5rem, 1.5rem + 5vw, 5.5rem) clamp(1.5rem, 1rem + 4vw, 5rem);
+    border: 1px solid var(--border-strong);
+    border-radius: calc(var(--radius-l) + 6px);
+    background:
+      radial-gradient(70% 120% at 100% 100%, rgb(255 95 31 / 0.28), transparent 60%),
+      linear-gradient(135deg, var(--basalt-800), var(--basalt-950));
+  }
+
+  .cta__panel :global(.cta__contours) {
+    z-index: -1;
+    color: rgb(255 255 255 / 0.08);
+  }
+
+  .cta__content {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-m);
+    max-width: 720px;
+  }
+
+  .cta__title {
+    max-width: 16ch;
+  }
+
+  .cta__text {
+    max-width: 54ch;
+  }
+
+  .cta .btn-row {
+    margin-top: var(--space-2xs);
+  }
+
+  .cta .btn--secondary {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+</style>

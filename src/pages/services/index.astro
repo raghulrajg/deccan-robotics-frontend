@@ -1,0 +1,131 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Illustration from '@/components/ui/Illustration.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Engagements from '@/components/home/Engagements.astro';
+import LayerStack from '@/components/home/LayerStack.astro';
+import CtaBand from '@/components/ui/CtaBand.astro';
+import { services } from '@/data/services';
+import { href } from '@/lib/url';
+import { breadcrumbSchema } from '@/lib/schema';
+
+const schema = [breadcrumbSchema(Astro.site, [{ label: 'Services', href: '/services/' }])];
+---
+
+<BaseLayout
+  title="Services — Robotics, Embedded Systems & Industrial Automation"
+  description="Robotics, embedded systems and industrial automation engineering — delivered as consulting, proofs of concept and functional prototypes by one integrated team."
+  schema={schema}
+>
+  <PageHero
+    eyebrow="Services"
+    title="Engineering services, <em>from silicon to cloud.</em>"
+    lead="Three disciplines, one integrated team — engaged as consulting, a focused proof of concept or a full functional prototype."
+    crumbs={[{ label: 'Services' }]}
+    seed={21}
+  >
+    <a class="btn btn--primary" href={href('/contact/')}>
+      Start a project
+      <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+    </a>
+    <a class="btn btn--secondary" href={href('/how-we-work/')}>How we work</a>
+  </PageHero>
+
+  <section class="section theme-light" aria-label="Disciplines">
+    <div class="container rows">
+      {
+        services.map((s, i) => (
+          <article class:list={['row', { 'row--flip': i % 2 === 1 }]} aria-labelledby={`row-${s.slug}`}>
+            <div class="row__media" data-reveal>
+              <Illustration name={s.illustration} />
+            </div>
+            <div class="row__body" data-reveal style="--reveal-delay: 100ms">
+              <p class="eyebrow">
+                <span class="num">0{i + 1}</span>
+                {s.name}
+              </p>
+              <h2 id={`row-${s.slug}`} class="h2 row__title">
+                {s.headline}
+              </h2>
+              <p class="lead">{s.lead}</p>
+              <ul class="check-list row__caps">
+                {s.capabilities.map((c) => (
+                  <li>{c.title}</li>
+                ))}
+              </ul>
+              <a class="btn btn--dark" href={href(`/services/${s.slug}/`)}>
+                Explore {s.name.toLowerCase()}
+                <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <Engagements />
+  <LayerStack index="" />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .rows {
+    display: grid;
+    gap: clamp(4rem, 3rem + 5vw, 8rem);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+  }
+
+  .row--flip .row__media {
+    order: 2;
+  }
+
+  .row__media :global(.ill) {
+    border-radius: var(--radius-l);
+    box-shadow: 0 40px 80px -40px rgb(17 19 23 / 0.45);
+  }
+
+  .row__body {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-m);
+  }
+
+  .row__title {
+    max-width: 18ch;
+  }
+
+  .row__caps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem 1.5rem;
+    width: 100%;
+  }
+
+  .row__caps li {
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  @media (max-width: 960px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+
+    .row--flip .row__media {
+      order: 0;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .row__caps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

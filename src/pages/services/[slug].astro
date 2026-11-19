@@ -1,0 +1,490 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Illustration from '@/components/ui/Illustration.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Faq from '@/components/ui/Faq.astro';
+import CtaBand from '@/components/ui/CtaBand.astro';
+import { services, type Service } from '@/data/services';
+import { engagements } from '@/data/content';
+import { href } from '@/lib/url';
+import { breadcrumbSchema, organizationRef } from '@/lib/schema';
+
+export function getStaticPaths() {
+  return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const others = services.filter((s) => s.slug !== service.slug);
+const path = `/services/${service.slug}/`;
+const schema = [
+  breadcrumbSchema(Astro.site, [
+    { label: 'Services', href: '/services/' },
+    { label: service.name, href: path },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `${service.name} engineering`,
+    serviceType: service.name,
+    description: service.seoDescription,
+    provider: organizationRef(Astro.site),
+    areaServed: 'Worldwide',
+    url: new URL(href(path), Astro.site).toString(),
+  },
+];
+const ctaText: Record<Service['slug'], string> = {
+  robotics:
+    'Whether it’s a new robot, an arm cell or autonomy for a machine you already have — tell us about it and we’ll map the fastest path to a working demo.',
+  'embedded-systems':
+    'From a dev-board prototype to production-ready electronics — tell us what your device needs to do and we’ll show you how to get there.',
+  'industrial-automation':
+    'Tell us about the process you want to automate or the machine you want to modernise. We’ll start with what it would take — and what it would pay back.',
+};
+---
+
+<BaseLayout title={service.seoTitle} description={service.seoDescription} schema={schema}>
+  <PageHero
+    eyebrow={service.name}
+    title={service.headline}
+    lead={service.lead}
+    crumbs={[{ label: 'Services', href: '/services/' }, { label: service.name }]}
+    split
+    seed={service.slug.length}
+  >
+    <a class="btn btn--primary" href={href('/contact/')}>
+      Discuss your project
+      <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+    </a>
+    <a class="btn btn--secondary" href="#projects">Typical projects</a>
+    <Illustration slot="visual" name={service.illustration} />
+  </PageHero>
+
+  <!-- Capabilities -->
+  <section class="section theme-light" aria-labelledby="cap-title">
+    <div class="container">
+      <SectionHeader
+        id="cap-title"
+        eyebrow="Capabilities"
+        title={`What we build in <em>${service.name.toLowerCase()}.</em>`}
+        lead="Senior engineers across mechanics, electronics, firmware and software — so each capability connects cleanly to the rest of the system."
+        align="split"
+      />
+      <ul role="list" class="caps" data-reveal-stagger="70">
+        {
+          service.capabilities.map((c) => (
+            <li class="caps__item card" data-reveal>
+              <span class="icon-tile">
+                <Icon name={c.icon} />
+              </span>
+              <h3 class="h4">{c.title}</h3>
+              <p>{c.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Typical projects -->
+  <section class="section theme-light section--alt" id="projects" aria-labelledby="proj-title">
+    <div class="container">
+      <SectionHeader
+        id="proj-title"
+        eyebrow="Typical projects"
+        title="Where teams usually <em>start with us.</em>"
+        lead="Representative engagements. Timelines are typical ranges — we confirm scope, milestones and cost with you before any work begins."
+        align="split"
+      />
+      <ul role="list" class="proj" data-reveal-stagger="80">
+        {
+          service.projects.map((p, i) => (
+            <li class="proj__item" data-reveal>
+              <div class="proj__top">
+                <span class="mono proj__n">P-0{i + 1}</span>
+                <span class="chip proj__time">
+                  <Icon name="timer" size={14} strokeWidth={2} />
+                  {p.timeline}
+                </span>
+              </div>
+              <h3 class="h3 proj__title">{p.title}</h3>
+              <p class="proj__text">{p.text}</p>
+              <ul role="list" class="proj__tags">
+                {p.tags.map((t) => (
+                  <li class="mono">{t}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Stack + deliverables -->
+  <section class="section theme-dark" aria-labelledby="stack-title">
+    <div class="container stackdel">
+      <div>
+        <SectionHeader
+          id="stack-title"
+          eyebrow="Tools & platforms"
+          title="Proven tools, <em>chosen for your constraints.</em>"
+        />
+        <dl class="tools" data-reveal>
+          {
+            service.stack.map((g) => (
+              <div class="tools__group">
+                <dt class="mono">{g.group}</dt>
+                <dd>
+                  <ul role="list">
+                    {g.items.map((it) => (
+                      <li class="chip">{it}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <aside class="deliv card ticks" data-reveal style="--reveal-delay: 120ms" aria-labelledby="deliv-title">
+        <p class="mono deliv__label">Handover pack</p>
+        <h3 id="deliv-title" class="h3">What you get</h3>
+        <ul class="check-list">
+          {service.outcomes.map((o) => <li>{o}</li>)}
+        </ul>
+        <div class="deliv__engage">
+          <p class="mono deliv__label">Engage as</p>
+          <ul role="list">
+            {
+              engagements.map((e) => (
+                <li>
+                  <a href={href(`/how-we-work/#${e.id}`)}>
+                    <span>{e.name}</span>
+                    <span class="mono">{e.duration}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section theme-light" aria-labelledby="sfaq-title">
+    <div class="container sfaq">
+      <SectionHeader id="sfaq-title" eyebrow="FAQ" title={`${service.name}, <em>answered.</em>`} />
+      <Faq items={service.faqs} />
+    </div>
+  </section>
+
+  <!-- Other disciplines -->
+  <section class="section section--tight theme-light section--alt" aria-labelledby="others-title">
+    <div class="container">
+      <h2 id="others-title" class="h3 others__title" data-reveal>Explore our other disciplines</h2>
+      <ul role="list" class="others" data-reveal-stagger="80">
+        {
+          others.map((o) => (
+            <li data-reveal>
+              <a class="others__card card" href={href(`/services/${o.slug}/`)}>
+                <span class="icon-tile">
+                  <Icon name={o.icon} />
+                </span>
+                <span class="others__body">
+                  <span class="others__name">{o.name}</span>
+                  <span class="others__sum">{o.summary}</span>
+                </span>
+                <Icon name="arrow-up-right" class="others__arrow" strokeWidth={2} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand title="Let’s scope your project." text={ctaText[service.slug]} />
+</BaseLayout>
+
+<style>
+  .caps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+
+  .caps__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding: var(--space-l) var(--space-m);
+    box-shadow: none;
+    transition:
+      border-color 0.3s,
+      transform 0.4s var(--ease-out);
+  }
+
+  .caps__item:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    transform: translateY(-3px);
+  }
+
+  .caps__item .icon-tile {
+    margin-bottom: var(--space-xs);
+  }
+
+  .caps__item p {
+    color: var(--fg-muted);
+  }
+
+  .proj {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+
+  .proj__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding: var(--space-l);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+
+  .proj__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .proj__n {
+    font-size: var(--step--1);
+    color: var(--accent-text);
+    letter-spacing: 0.06em;
+  }
+
+  .proj__time {
+    color: var(--fg);
+  }
+
+  .proj__text {
+    color: var(--fg-muted);
+  }
+
+  .proj__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    margin-top: auto;
+    padding: var(--space-s) 0 0;
+    border-top: 1px dashed var(--border-strong);
+  }
+
+  .proj__tags li {
+    font-size: var(--step--2);
+    letter-spacing: 0.04em;
+    color: var(--fg-subtle);
+  }
+
+  .proj__tags li::before {
+    content: '#';
+    color: var(--accent-text);
+    margin-right: 0.15em;
+  }
+
+  .stackdel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .tools {
+    display: grid;
+    gap: var(--space-m);
+    margin-top: calc(-1 * var(--space-m));
+  }
+
+  .tools__group {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: var(--space-s);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--border);
+  }
+
+  .tools__group dt {
+    padding-top: 0.35rem;
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .tools__group ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0;
+  }
+
+  .tools__group .chip {
+    font-size: 0.8rem;
+    color: var(--fg);
+  }
+
+  .deliv {
+    display: grid;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    background: var(--surface);
+  }
+
+  .deliv__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+
+  .deliv h3 {
+    margin-top: calc(-1 * var(--space-s));
+  }
+
+  .deliv__engage {
+    display: grid;
+    gap: var(--space-xs);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--border);
+  }
+
+  .deliv__engage ul {
+    display: grid;
+    padding: 0;
+  }
+
+  .deliv__engage a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px dashed var(--border);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .deliv__engage a:hover {
+    color: var(--accent-text);
+  }
+
+  .deliv__engage .mono {
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--fg-muted);
+  }
+
+  .sfaq {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: var(--space-xl) clamp(2rem, 1rem + 5vw, 6rem);
+    align-items: start;
+  }
+
+  .others__title {
+    margin-bottom: var(--space-l);
+  }
+
+  .others {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+
+  .others__card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    height: 100%;
+    padding: var(--space-m) var(--space-l);
+    text-decoration: none;
+    box-shadow: none;
+    transition:
+      border-color 0.3s,
+      transform 0.4s var(--ease-out);
+  }
+
+  .others__card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .others__body {
+    display: grid;
+    gap: 0.2rem;
+    flex: 1;
+  }
+
+  .others__name {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 750;
+    font-stretch: 104%;
+    letter-spacing: -0.015em;
+  }
+
+  .others__sum {
+    color: var(--fg-muted);
+  }
+
+  .others__card :global(.others__arrow) {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    color: var(--accent-text);
+    transition: transform 0.3s var(--ease-out);
+  }
+
+  .others__card:hover :global(.others__arrow) {
+    transform: translate(3px, -3px);
+  }
+
+  @media (max-width: 1080px) {
+    .caps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stackdel,
+    .sfaq {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .caps,
+    .proj,
+    .others {
+      grid-template-columns: 1fr;
+    }
+
+    .tools__group {
+      grid-template-columns: 1fr;
+      gap: var(--space-xs);
+    }
+
+    .proj__item {
+      padding: var(--space-m);
+    }
+  }
+</style>

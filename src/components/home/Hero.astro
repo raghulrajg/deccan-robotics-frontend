@@ -1,0 +1,189 @@
+---
+import RobotArm from '@/components/home/RobotArm.astro';
+import Contours from '@/components/ui/Contours.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { href } from '@/lib/url';
+
+const flow = [
+  { n: '01', label: 'Consult' },
+  { n: '02', label: 'Prove' },
+  { n: '03', label: 'Prototype' },
+];
+---
+
+<section class="hero theme-dark" aria-labelledby="hero-title">
+  <div class="hero__bg" aria-hidden="true">
+    <div class="hero__grid bg-grid"></div>
+    <Contours class="hero__contours" cx={980} cy={180} rings={11} base={36} gap={38} seed={11} highlight={4} />
+    <div class="hero__glow"></div>
+  </div>
+
+  <div class="container hero__layout">
+    <div class="hero__copy">
+      <p class="chip hero__status" data-reveal>
+        <span class="led" aria-hidden="true"></span>
+        Accepting new projects
+      </p>
+      <h1 id="hero-title" class="display hero__title" data-reveal style="--reveal-delay: 60ms">
+        From idea to <span class="hero__em">working machine.</span>
+      </h1>
+      <p class="lead hero__lead" data-reveal style="--reveal-delay: 120ms">
+        Deccan Robotics is an engineering studio for <strong>robotics</strong>, <strong
+          >embedded systems</strong
+        > and <strong>industrial automation</strong>. We consult, prove out concepts and build working
+        prototypes — so you can de-risk early, demo sooner and scale with confidence.
+      </p>
+      <div class="btn-row" data-reveal style="--reveal-delay: 180ms">
+        <a class="btn btn--primary" href={href('/contact/')}>
+          Start a project
+          <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+        </a>
+        <a class="btn btn--secondary" href={href('/services/')}>Explore services</a>
+      </div>
+
+      <div class="hero__flow" data-reveal style="--reveal-delay: 240ms">
+        <span class="hero__flow-label mono">How we engage</span>
+        <ol role="list" class="hero__flow-steps">
+          {
+            flow.map((s, i) => (
+              <li>
+                <span class="mono hero__flow-n">{s.n}</span>
+                {s.label}
+                {i < flow.length - 1 && <Icon name="arrow-right" class="hero__flow-arrow" size={16} />}
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+
+    <div class="hero__visual" data-reveal style="--reveal-delay: 160ms">
+      <RobotArm />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-top: calc(var(--header-h) + clamp(2.5rem, 1rem + 5vw, 5.5rem));
+    padding-bottom: clamp(3.5rem, 2rem + 5vw, 6.5rem);
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero__grid {
+    position: absolute;
+    inset: 0;
+    mask-image: radial-gradient(120% 90% at 70% 30%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(120% 90% at 70% 30%, #000 30%, transparent 75%);
+  }
+
+  .hero :global(.hero__contours) {
+    color: rgb(255 255 255 / 0.07);
+  }
+
+  .hero__glow {
+    position: absolute;
+    width: 900px;
+    height: 900px;
+    right: -260px;
+    top: -320px;
+    background: radial-gradient(closest-side, rgb(255 95 31 / 0.16), transparent);
+  }
+
+  .hero__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2.5rem, 1rem + 4vw, 5rem);
+  }
+
+  .hero__copy {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-m);
+  }
+
+  .hero__title {
+    max-width: 11ch;
+  }
+
+  .hero__em {
+    color: var(--laterite-500);
+  }
+
+  .hero__lead strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .hero__flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+    margin-top: var(--space-xs);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--border);
+    width: 100%;
+  }
+
+  .hero__flow-label {
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .hero__flow-steps {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0;
+  }
+
+  .hero__flow-steps li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .hero__flow-n {
+    font-size: var(--step--2);
+    font-weight: 500;
+    color: var(--accent-text);
+  }
+
+  .hero__flow-steps :global(.hero__flow-arrow) {
+    margin-inline: 0.35rem;
+    color: var(--fg-subtle);
+  }
+
+  .hero__visual {
+    position: relative;
+  }
+
+  @media (max-width: 1080px) {
+    .hero__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .hero__title {
+      max-width: 14ch;
+    }
+
+    .hero__visual {
+      max-width: 720px;
+    }
+  }
+</style>

@@ -1,0 +1,798 @@
+---
+/**
+ * Hero "work cell": a 3-axis arm that palletises boxes from a conveyor,
+ * solving inverse kinematics every frame. Visitors can take control with a
+ * pointer (or tap a target on touch screens). Respects prefers-reduced-motion
+ * and pauses while off-screen.
+ */
+const S = { x: 150, y: 268 }; // shoulder joint
+const FLOOR = 420;
+const L1 = 165;
+const L2 = 150;
+const TIP = 40;
+
+// First frame (also the reduced-motion pose): holding a box above pallet slot 3.
+const wrist = { x: 291, y: 236 };
+const toDeg = (r: number) => (r * 180) / Math.PI;
+const dx = wrist.x - S.x;
+const dy = wrist.y - S.y;
+const d = Math.hypot(dx, dy);
+const a2r = Math.acos((d * d - L1 * L1 - L2 * L2) / (2 * L1 * L2));
+const a1r = Math.atan2(dy, dx) - Math.atan2(L2 * Math.sin(a2r), L1 + L2 * Math.cos(a2r));
+const a1 = toDeg(a1r);
+const a2 = toDeg(a2r);
+const a3 = 90 - a1 - a2;
+const fmt = (v: number) => `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(1).padStart(5, '0')}°`;
+const r = 36;
+const arcD = `M${S.x + r} ${S.y}A${r} ${r} 0 0 0 ${(S.x + r * Math.cos(a1r)).toFixed(1)} ${(S.y + r * Math.sin(a1r)).toFixed(1)}`;
+const thetaPos = {
+  x: (S.x + 54 * Math.cos(a1r / 2) - 6).toFixed(1),
+  y: (S.y + 54 * Math.sin(a1r / 2) + 4).toFixed(1),
+};
+const hud = {
+  j1: fmt(-a1),
+  j2: fmt(-a2),
+  j3: fmt(-a3),
+  x: `${(((wrist.x - S.x) * 2.4) / 1000).toFixed(3)} m`,
+  z: `${(((FLOOR - wrist.y - TIP) * 2.4) / 1000).toFixed(3)} m`,
+};
+const ticks = Array.from({ length: 18 }, (_, i) => i * 18);
+---
+
+<figure class="arm ticks" data-arm>
+  <div class="arm__bar mono">
+    <span>SIM-01 · 3-axis palletiser</span>
+    <span class="arm__live"><span class="led" aria-hidden="true"></span> <span data-arm-mode>Auto</span></span>
+  </div>
+
+  <div class="arm__stage" data-arm-stage>
+    <svg viewBox="0 64 600 396" role="img" aria-labelledby="arm-title arm-desc" data-arm-svg>
+      <title id="arm-title">Interactive robot arm simulation</title>
+      <desc id="arm-desc">
+        A robotic arm picks boxes from a conveyor and stacks them on a pallet, solving inverse
+        kinematics in real time. Move your pointer over the cell, or tap it, to set a target.
+      </desc>
+      <defs>
+        <pattern id="arm-grid-minor" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M20 0H0V20" fill="none" stroke="rgb(255 255 255 / 0.035)" stroke-width="1"></path>
+        </pattern>
+        <pattern id="arm-grid" width="100" height="100" patternUnits="userSpaceOnUse">
+          <rect width="100" height="100" fill="url(#arm-grid-minor)"></rect>
+          <path d="M100 0H0V100" fill="none" stroke="rgb(255 255 255 / 0.07)" stroke-width="1"></path>
+        </pattern>
+        <pattern id="arm-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <path d="M0 0V8" stroke="rgb(255 255 255 / 0.12)" stroke-width="1.5"></path>
+        </pattern>
+        <linearGradient id="arm-link" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ff8a4f"></stop>
+          <stop offset="0.45" stop-color="#ff5f1f"></stop>
+          <stop offset="1" stop-color="#d94a0f"></stop>
+        </linearGradient>
+        <linearGradient id="arm-metal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3a434f"></stop>
+          <stop offset="1" stop-color="#232931"></stop>
+        </linearGradient>
+        <radialGradient id="arm-glow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="rgb(255 95 31 / 0.22)"></stop>
+          <stop offset="1" stop-color="rgb(255 95 31 / 0)"></stop>
+        </radialGradient>
+        <g id="arm-box">
+          <rect x="-14" y="-12" width="28" height="24" rx="2" fill="#c99a68" stroke="#7d5a36" stroke-width="1"></rect>
+          <rect x="-3" y="-12" width="6" height="24" fill="#b0824f" opacity="0.8"></rect>
+          <path d="M-10 6h7" stroke="#7d5a36" stroke-width="1" opacity="0.7"></path>
+        </g>
+      </defs>
+
+      <rect width="600" height="460" fill="url(#arm-grid)"></rect>
+      <ellipse cx="290" cy="300" rx="260" ry="190" fill="url(#arm-glow)"></ellipse>
+
+      <!-- world frame gizmo -->
+      <g class="arm__gizmo" transform="translate(30 124)">
+        <path d="M0 0V-26M0 0H26" stroke="currentColor" stroke-width="1.5" fill="none"></path>
+        <path d="M-3.5 -21 0 -28l3.5 7M21 -3.5 28 0l-7 3.5" fill="currentColor"></path>
+        <text x="-4" y="-33" class="arm__label">Z</text>
+        <text x="33" y="4" class="arm__label">X</text>
+        <text x="0" y="18" class="arm__label arm__label--dim">WORLD</text>
+      </g>
+
+      <!-- floor -->
+      <rect x="0" y={FLOOR} width="600" height="14" fill="url(#arm-hatch)"></rect>
+      <path d={`M0 ${FLOOR}H600`} stroke="rgb(255 255 255 / 0.28)" stroke-width="1.5"></path>
+
+      <!-- dimension line: base to pick point -->
+      <g class="arm__dim">
+        <path d={`M${S.x} 446H392M${S.x} 438v14M392 438v14`} stroke="currentColor" stroke-width="1"></path>
+        <path d={`M${S.x + 2} 446l7 -3v6zM390 446l-7 -3v6z`} fill="currentColor"></path>
+        <rect x="236" y="439" width="70" height="14" fill="var(--basalt-900)"></rect>
+        <text x="271" y="450" text-anchor="middle" class="arm__label">0.581 m</text>
+      </g>
+
+      <!-- pallet -->
+      <g>
+        <rect x="212" y="406" width="96" height="6" rx="1" fill="#3a4350" stroke="rgb(255 255 255 / 0.18)"></rect>
+        <rect x="214" y="412" width="12" height="8" fill="#2c333c"></rect>
+        <rect x="254" y="412" width="12" height="8" fill="#2c333c"></rect>
+        <rect x="294" y="412" width="12" height="8" fill="#2c333c"></rect>
+        <text x="314" y="417" class="arm__label arm__label--dim">PALLET-01</text>
+      </g>
+
+      <!-- conveyor -->
+      <g>
+        <rect x="396" y="344" width="8" height="76" fill="#232931"></rect>
+        <rect x="540" y="344" width="8" height="76" fill="#232931"></rect>
+        <path d="M400 410L544 360" stroke="#232931" stroke-width="4"></path>
+        <rect x="352" y="330" width="300" height="14" rx="7" fill="#1b2026" stroke="rgb(255 255 255 / 0.2)"></rect>
+        <g fill="#313944">
+          <circle cx="359" cy="337" r="5"></circle>
+          <circle cx="430" cy="337" r="4"></circle>
+          <circle cx="500" cy="337" r="4"></circle>
+          <circle cx="570" cy="337" r="4"></circle>
+        </g>
+        <svg x="352" y="328" width="248" height="6" overflow="hidden">
+          <g data-arm-belt>
+            {ticks.map((x) => <rect x={x} y="2" width="8" height="2" fill="rgb(255 255 255 / 0.28)" />)}
+          </g>
+        </svg>
+        <rect x="366" y="319" width="6" height="11" rx="1" fill="var(--laterite-500)"></rect>
+        <text x="472" y="375" text-anchor="middle" class="arm__label arm__label--dim">CONV-A</text>
+      </g>
+
+      <!-- boxes -->
+      <g data-arm-placed>
+        <use href="#arm-box" x="229" y="394"></use>
+        <use href="#arm-box" x="260" y="394"></use>
+      </g>
+      <use href="#arm-box" x="392" y="318" data-arm-incoming></use>
+      <use href="#arm-box" x={wrist.x} y={wrist.y + 30} data-arm-held></use>
+
+      <!-- planner overlays -->
+      <path d="" class="arm__trail" data-arm-trail></path>
+      <path d={`M${S.x} ${S.y}L${wrist.x} ${wrist.y}`} class="arm__reach" data-arm-reach></path>
+      <path d={arcD} class="arm__arc" data-arm-arc></path>
+      <text class="arm__label arm__theta" data-arm-theta x={thetaPos.x} y={thetaPos.y}>θ1</text>
+
+      <!-- base -->
+      <rect x="108" y="408" width="84" height="12" rx="2" fill="#2c333c" stroke="rgb(255 255 255 / 0.16)"></rect>
+      <rect x="132" y="286" width="36" height="124" fill="url(#arm-metal)" stroke="rgb(255 255 255 / 0.12)"></rect>
+      <path d="M138 300v96M162 300v96" stroke="rgb(255 255 255 / 0.06)"></path>
+      <rect x="116" y="250" width="68" height="42" rx="10" fill="#1d2228" stroke="rgb(255 255 255 / 0.16)"></rect>
+      <text x="150" y="285" text-anchor="middle" class="arm__label arm__label--tiny">DR·01</text>
+
+      <!-- arm: link 1 → link 2 → wrist/gripper -->
+      <g data-arm-l1 transform={`translate(${S.x} ${S.y}) rotate(${a1.toFixed(2)})`}>
+        <rect x="-16" y="-16" width={L1 + 32} height="32" rx="16" fill="url(#arm-link)" stroke="#a63a0b"></rect>
+        <path d={`M4 -10H${L1 - 4}`} stroke="rgb(255 255 255 / 0.35)" stroke-width="2" stroke-linecap="round"></path>
+        <g data-arm-l2 transform={`translate(${L1} 0) rotate(${a2.toFixed(2)})`}>
+          <rect x="-12" y="-12" width={L2 + 24} height="24" rx="12" fill="url(#arm-link)" stroke="#a63a0b"></rect>
+          <path d={`M4 -7H${L2 - 4}`} stroke="rgb(255 255 255 / 0.32)" stroke-width="2" stroke-linecap="round"></path>
+          <g data-arm-l3 transform={`translate(${L2} 0) rotate(${a3.toFixed(2)})`}>
+            <rect x="4" y="-9" width="10" height="18" rx="2" fill="#2c333c" stroke="rgb(255 255 255 / 0.2)"></rect>
+            <rect x="13" y="-24" width="6" height="48" rx="1.5" fill="#3a4350" stroke="rgb(255 255 255 / 0.22)"></rect>
+            <rect data-arm-finger-a x="18" y="-19" width="22" height="5" rx="1.5" fill="#4a5361" stroke="rgb(255 255 255 / 0.25)"></rect>
+            <rect data-arm-finger-b x="18" y="14" width="22" height="5" rx="1.5" fill="#4a5361" stroke="rgb(255 255 255 / 0.25)"></rect>
+            <circle r="10" fill="#1b2026" stroke="var(--laterite-500)" stroke-width="2"></circle>
+            <circle r="3" fill="var(--laterite-500)"></circle>
+          </g>
+          <circle r="15" fill="#1b2026" stroke="var(--laterite-500)" stroke-width="2"></circle>
+          <circle r="5" fill="var(--laterite-500)"></circle>
+          <path d="M-9 0h18M0 -9v18" stroke="rgb(255 255 255 / 0.25)" stroke-width="1"></path>
+        </g>
+        <circle r="19" fill="#1b2026" stroke="var(--laterite-500)" stroke-width="2.5"></circle>
+        <circle r="6.5" fill="var(--laterite-500)"></circle>
+        <path d="M-12 0h24M0 -12v24" stroke="rgb(255 255 255 / 0.25)" stroke-width="1"></path>
+      </g>
+
+      <!-- target marker -->
+      <g class="arm__target" data-arm-target transform={`translate(${wrist.x} ${wrist.y + TIP})`}>
+        <circle r="9" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+        <path d="M-15 0h8M7 0h8M0 -15v8M0 7v8" stroke="currentColor" stroke-width="1.5"></path>
+      </g>
+    </svg>
+    <p class="arm__hint mono" aria-hidden="true">
+      <span class="arm__hint-mouse">Move your cursor over the cell to take control</span>
+      <span class="arm__hint-touch">Tap inside the cell to set a target</span>
+    </p>
+  </div>
+
+  <figcaption class="arm__hud mono">
+    <dl>
+      <div><dt>J1</dt><dd data-arm-j1>{hud.j1}</dd></div>
+      <div><dt>J2</dt><dd data-arm-j2>{hud.j2}</dd></div>
+      <div><dt>J3</dt><dd data-arm-j3>{hud.j3}</dd></div>
+      <div><dt>TCP X</dt><dd data-arm-x>{hud.x}</dd></div>
+      <div><dt>TCP Z</dt><dd data-arm-z>{hud.z}</dd></div>
+      <div><dt>Grip</dt><dd data-arm-grip>Closed</dd></div>
+      <div><dt>Picks</dt><dd data-arm-picks>002</dd></div>
+    </dl>
+  </figcaption>
+</figure>
+
+<script>
+  type Vec = { x: number; y: number };
+  type Step =
+    | { kind: 'move'; to: Vec; min?: number; arc?: number; dur?: number; done?: () => void }
+    | { kind: 'grip'; close: boolean; dur: number; done?: () => void }
+    | { kind: 'wait'; until: () => boolean }
+    | { kind: 'pause'; dur: number; done?: () => void };
+
+  // Geometry (SVG units) — must match the markup above.
+  const S: Vec = { x: 150, y: 268 };
+  const L1 = 165;
+  const L2 = 150;
+  const FLOOR = 420;
+  const TIP = 40; // wrist → fingertip
+  const BOX_OFF = 30; // wrist → held box centre
+  const PICK: Vec = { x: 392, y: 288 }; // wrist pose to grasp a box on the belt
+  const TRAVEL_Y = 236;
+  const SLOTS: Vec[] = [
+    { x: 229, y: 394 },
+    { x: 260, y: 394 },
+    { x: 291, y: 394 },
+    { x: 229, y: 370 },
+    { x: 260, y: 370 },
+    { x: 291, y: 370 },
+  ];
+  const MM_PER_UNIT = 2.4;
+  const GRIP_OPEN = 19;
+  const GRIP_CLOSED = 14;
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  const deg = (r: number) => (r * 180) / Math.PI;
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+  const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const fmtAngle = (v: number) => `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(1).padStart(5, '0')}°`;
+
+  /** Two-link IK with the gripper held vertical. Returns SVG-space angles (degrees). */
+  function solve(w: Vec) {
+    const dx = w.x - S.x;
+    const dy = w.y - S.y;
+    const d = clamp(Math.hypot(dx, dy), Math.abs(L1 - L2) + 1, L1 + L2 - 0.5);
+    const c = clamp((d * d - L1 * L1 - L2 * L2) / (2 * L1 * L2), -1, 1);
+    const a2 = Math.acos(c); // positive → elbow up for targets right of the base
+    const a1 = Math.atan2(dy, dx) - Math.atan2(L2 * Math.sin(a2), L1 + L2 * Math.cos(a2));
+    return { a1: deg(a1), a2: deg(a2), a3: 90 - deg(a1) - deg(a2) };
+  }
+
+  /** Keep a wrist target inside the reachable, collision-free workspace. */
+  function constrain(w: Vec): Vec {
+    let x = clamp(w.x, S.x + 46, 588);
+    let y = clamp(w.y, 120, FLOOR - TIP - 6);
+    const dx = x - S.x;
+    const dy = y - S.y;
+    const d = Math.hypot(dx, dy);
+    const max = L1 + L2 - 6;
+    const min = 60;
+    if (d > max || d < min) {
+      const k = (d > max ? max : min) / (d || 1);
+      x = S.x + dx * k;
+      y = S.y + dy * k;
+    }
+    return { x: Math.max(x, S.x + 46), y };
+  }
+
+  function initArm(root: HTMLElement) {
+    const q = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+    const svg = q<SVGSVGElement>('[data-arm-svg]');
+    const stage = q<HTMLElement>('[data-arm-stage]');
+    const l1 = q<SVGGElement>('[data-arm-l1]');
+    const l2 = q<SVGGElement>('[data-arm-l2]');
+    const l3 = q<SVGGElement>('[data-arm-l3]');
+    const fingerA = q<SVGRectElement>('[data-arm-finger-a]');
+    const fingerB = q<SVGRectElement>('[data-arm-finger-b]');
+    const held = q<SVGUseElement>('[data-arm-held]');
+    const incoming = q<SVGUseElement>('[data-arm-incoming]');
+    const placedGroup = q<SVGGElement>('[data-arm-placed]');
+    const belt = q<SVGGElement>('[data-arm-belt]');
+    const trail = q<SVGPathElement>('[data-arm-trail]');
+    const reach = q<SVGPathElement>('[data-arm-reach]');
+    const arc = q<SVGPathElement>('[data-arm-arc]');
+    const theta = q<SVGTextElement>('[data-arm-theta]');
+    const target = q<SVGGElement>('[data-arm-target]');
+    const out = {
+      j1: q<HTMLElement>('[data-arm-j1]'),
+      j2: q<HTMLElement>('[data-arm-j2]'),
+      j3: q<HTMLElement>('[data-arm-j3]'),
+      x: q<HTMLElement>('[data-arm-x]'),
+      z: q<HTMLElement>('[data-arm-z]'),
+      grip: q<HTMLElement>('[data-arm-grip]'),
+      picks: q<HTMLElement>('[data-arm-picks]'),
+      mode: q<HTMLElement>('[data-arm-mode]'),
+    };
+
+    // — State —
+    let wrist: Vec = { x: 291, y: TRAVEL_Y };
+    let grip = GRIP_CLOSED;
+    let holding = true;
+    let slot = 2;
+    let picks = 2;
+    let beltOffset = 0;
+    let beltRunning = false;
+    let incomingX = 392;
+    let incomingReady = true;
+    let goal: Vec = { x: 291, y: TRAVEL_Y };
+    const trailPts: Vec[] = [];
+    let trailClock = 0;
+
+    // Pointer control
+    let manual = false;
+    let manualGoal: Vec = { ...wrist };
+    let lastPointer = 0;
+    let manualHold = 2500;
+
+    // — Planner —
+    const queue: Step[] = [];
+    let active: Step | null = null;
+    let stepT = 0;
+    let stepFrom: Vec = { ...wrist };
+    let gripFrom = grip;
+
+    const above = (p: Vec): Vec => ({ x: p.x, y: TRAVEL_Y });
+    const wristForSlot = (s: Vec): Vec => ({ x: s.x, y: s.y - 12 - 18 });
+
+    function spawnIncoming() {
+      incomingX = 640;
+      incomingReady = false;
+      incoming.setAttribute('x', String(incomingX));
+      incoming.style.opacity = '1';
+    }
+
+    function placeHeld() {
+      const s = SLOTS[slot];
+      const box = document.createElementNS(SVG_NS, 'use');
+      box.setAttribute('href', '#arm-box');
+      box.setAttribute('x', String(s.x));
+      box.setAttribute('y', String(s.y));
+      placedGroup.appendChild(box);
+      holding = false;
+      held.style.opacity = '0';
+      slot += 1;
+      if (slot >= SLOTS.length) {
+        slot = 0;
+        queue.unshift({
+          kind: 'pause',
+          dur: 0.2,
+          done: () => {
+            placedGroup.classList.add('is-clearing');
+            window.setTimeout(() => {
+              placedGroup.replaceChildren();
+              placedGroup.classList.remove('is-clearing');
+            }, 700);
+          },
+        });
+      }
+    }
+
+    function planCycle() {
+      const s = SLOTS[slot];
+      const w = wristForSlot(s);
+      queue.push(
+        { kind: 'move', to: above(w), arc: 50 },
+        { kind: 'move', to: w, min: 0.6 },
+        { kind: 'grip', close: false, dur: 0.28, done: placeHeld },
+        { kind: 'move', to: above(w) },
+        { kind: 'move', to: above(PICK), arc: 60 },
+        { kind: 'wait', until: () => incomingReady },
+        { kind: 'move', to: PICK, min: 0.5 },
+        {
+          kind: 'grip',
+          close: true,
+          dur: 0.32,
+          done: () => {
+            holding = true;
+            held.style.opacity = '1';
+            incoming.style.opacity = '0';
+            picks += 1;
+            out.picks.textContent = String(picks).padStart(3, '0');
+            spawnIncoming();
+          },
+        },
+        { kind: 'move', to: above(PICK) },
+      );
+    }
+
+    function startStep(step: Step) {
+      active = step;
+      stepT = 0;
+      stepFrom = { ...wrist };
+      gripFrom = grip;
+      if (step.kind === 'move') {
+        const dist = Math.hypot(step.to.x - wrist.x, step.to.y - wrist.y);
+        step.dur = Math.max(step.min ?? 0, clamp(0.35 + dist / 240, 0.4, 1.35));
+        goal = step.to;
+      }
+    }
+
+    function nextStep() {
+      if (!queue.length) planCycle();
+      startStep(queue.shift()!);
+    }
+
+    function advance(dt: number) {
+      if (!active) nextStep();
+      const step = active!;
+      if (step.kind === 'wait') {
+        if (step.until()) nextStep();
+        return;
+      }
+      stepT = Math.min(1, stepT + dt / step.dur!);
+      const e = ease(stepT);
+      if (step.kind === 'move') {
+        const mid = {
+          x: (stepFrom.x + step.to.x) / 2,
+          y: Math.min(stepFrom.y, step.to.y) - (step.arc ?? 0),
+        };
+        const u = 1 - e;
+        wrist = {
+          x: u * u * stepFrom.x + 2 * u * e * mid.x + e * e * step.to.x,
+          y: u * u * stepFrom.y + 2 * u * e * mid.y + e * e * step.to.y,
+        };
+      } else if (step.kind === 'grip') {
+        grip = gripFrom + ((step.close ? GRIP_CLOSED : GRIP_OPEN) - gripFrom) * e;
+      }
+      if (stepT >= 1) {
+        step.done?.();
+        nextStep();
+      }
+    }
+
+    function updateConveyor(dt: number) {
+      beltRunning = !incomingReady;
+      if (beltRunning) {
+        incomingX = Math.max(392, incomingX - 120 * dt);
+        incoming.setAttribute('x', incomingX.toFixed(2));
+        beltOffset = (beltOffset - 120 * dt) % 18;
+        belt.setAttribute('transform', `translate(${beltOffset.toFixed(2)} 0)`);
+        if (incomingX <= 392) incomingReady = true;
+      }
+    }
+
+    function render() {
+      const { a1, a2, a3 } = solve(wrist);
+      l1.setAttribute('transform', `translate(${S.x} ${S.y}) rotate(${a1.toFixed(2)})`);
+      l2.setAttribute('transform', `translate(${L1} 0) rotate(${a2.toFixed(2)})`);
+      l3.setAttribute('transform', `translate(${L2} 0) rotate(${a3.toFixed(2)})`);
+      fingerA.setAttribute('y', (-grip - 5).toFixed(2));
+      fingerB.setAttribute('y', grip.toFixed(2));
+
+      if (holding) {
+        held.setAttribute('x', wrist.x.toFixed(2));
+        held.setAttribute('y', (wrist.y + BOX_OFF).toFixed(2));
+      }
+
+      // Overlays
+      const r1 = (a1 * Math.PI) / 180;
+      const rr = 36;
+      reach.setAttribute('d', `M${S.x} ${S.y}L${wrist.x.toFixed(1)} ${wrist.y.toFixed(1)}`);
+      arc.setAttribute(
+        'd',
+        `M${S.x + rr} ${S.y}A${rr} ${rr} 0 0 ${a1 < 0 ? 0 : 1} ${(S.x + rr * Math.cos(r1)).toFixed(1)} ${(S.y + rr * Math.sin(r1)).toFixed(1)}`,
+      );
+      const mid = r1 / 2;
+      theta.setAttribute('x', (S.x + 54 * Math.cos(mid) - 6).toFixed(1));
+      theta.setAttribute('y', (S.y + 54 * Math.sin(mid) + 4).toFixed(1));
+
+      const tip = { x: wrist.x, y: wrist.y + TIP };
+      const g = manual ? { x: manualGoal.x, y: manualGoal.y + TIP } : { x: goal.x, y: goal.y + TIP };
+      target.setAttribute('transform', `translate(${g.x.toFixed(1)} ${g.y.toFixed(1)})`);
+
+      out.j1.textContent = fmtAngle(-a1);
+      out.j2.textContent = fmtAngle(-a2);
+      out.j3.textContent = fmtAngle(-a3);
+      out.x.textContent = `${(((tip.x - S.x) * MM_PER_UNIT) / 1000).toFixed(3)} m`;
+      out.z.textContent = `${(((FLOOR - tip.y) * MM_PER_UNIT) / 1000).toFixed(3)} m`;
+      out.grip.textContent = grip < (GRIP_OPEN + GRIP_CLOSED) / 2 ? 'Closed' : 'Open';
+    }
+
+    function updateTrail(dt: number) {
+      trailClock += dt;
+      if (trailClock < 0.04) return;
+      trailClock = 0;
+      const tip = { x: wrist.x, y: wrist.y + TIP };
+      const last = trailPts[trailPts.length - 1];
+      if (!last || Math.hypot(last.x - tip.x, last.y - tip.y) > 1.5) {
+        trailPts.push(tip);
+        if (trailPts.length > 46) trailPts.shift();
+      } else if (trailPts.length > 2) {
+        trailPts.shift();
+      }
+      trail.setAttribute(
+        'd',
+        trailPts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(''),
+      );
+    }
+
+    // — Pointer —
+    const toSvg = (e: PointerEvent): Vec | null => {
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return null;
+      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
+      return { x: p.x, y: p.y };
+    };
+    const takeControl = (e: PointerEvent, hold: number) => {
+      const p = toSvg(e);
+      if (!p) return;
+      manualGoal = constrain({ x: p.x, y: p.y - TIP });
+      manual = true;
+      manualHold = hold;
+      lastPointer = performance.now();
+      root.classList.add('is-manual');
+      out.mode.textContent = 'Manual';
+    };
+    const release = () => {
+      if (!manual) return;
+      manual = false;
+      root.classList.remove('is-manual');
+      out.mode.textContent = 'Auto';
+      if (active) startStep(active); // resume the interrupted step from here
+    };
+    stage.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'mouse' || e.pointerType === 'pen') takeControl(e, 2500);
+    });
+    stage.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'touch') takeControl(e, 2200);
+    });
+    stage.addEventListener('pointerleave', (e) => {
+      if (e.pointerType !== 'touch') release();
+    });
+
+    // — Loop —
+    let raf = 0;
+    let prev = 0;
+    let visible = false;
+
+    const frame = (now: number) => {
+      const dt = Math.min(0.05, (now - prev) / 1000 || 0);
+      prev = now;
+      if (manual) {
+        if (now - lastPointer > manualHold) release();
+        const k = 1 - Math.exp(-dt * 7);
+        wrist = { x: wrist.x + (manualGoal.x - wrist.x) * k, y: wrist.y + (manualGoal.y - wrist.y) * k };
+      } else {
+        advance(dt);
+      }
+      updateConveyor(dt);
+      updateTrail(dt);
+      render();
+      raf = requestAnimationFrame(frame);
+    };
+
+    const start = () => {
+      if (raf || !visible) return;
+      prev = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      visible ? start() : stop();
+    }).observe(root);
+
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    render();
+  }
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll<HTMLElement>('[data-arm]').forEach((root) => {
+    if (reduce.matches) {
+      root.classList.add('is-static');
+      return;
+    }
+    initArm(root);
+  });
+</script>
+
+<style>
+  .arm {
+    --panel: rgb(17 20 24 / 0.78);
+    position: relative;
+    display: grid;
+    margin: 0;
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-l);
+    box-shadow:
+      0 40px 80px -40px rgb(0 0 0 / 0.8),
+      0 0 0 1px rgb(255 255 255 / 0.02) inset;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    overflow: hidden;
+  }
+
+  .arm__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  .arm__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--fg);
+  }
+
+  .arm.is-manual .arm__live :global(.led) {
+    background: var(--laterite-500);
+    box-shadow: 0 0 0 3px rgb(255 95 31 / 0.2), 0 0 10px rgb(255 95 31 / 0.8);
+  }
+
+  .arm__stage {
+    position: relative;
+    cursor: crosshair;
+    touch-action: manipulation;
+  }
+
+  .arm__stage svg {
+    width: 100%;
+    height: auto;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .arm__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    fill: var(--fg-muted);
+  }
+
+  .arm__label--dim {
+    fill: var(--fg-subtle);
+    font-size: 9px;
+  }
+
+  .arm__label--tiny {
+    font-size: 8px;
+    fill: rgb(255 255 255 / 0.4);
+  }
+
+  .arm__gizmo,
+  .arm__dim {
+    color: rgb(255 255 255 / 0.4);
+  }
+
+  .arm__theta {
+    fill: var(--laterite-400);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  .arm__trail {
+    fill: none;
+    stroke: var(--laterite-400);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 4;
+    stroke-linecap: round;
+    opacity: 0.6;
+  }
+
+  .arm__reach {
+    stroke: rgb(255 255 255 / 0.28);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+  }
+
+  .arm__arc {
+    fill: none;
+    stroke: var(--laterite-400);
+    stroke-width: 1.25;
+  }
+
+  .arm__target {
+    color: rgb(255 255 255 / 0.45);
+    transition: color 0.3s;
+  }
+
+  .arm.is-manual .arm__target {
+    color: var(--laterite-400);
+  }
+
+  [data-arm-placed] :global(use) {
+    transition: opacity 0.6s var(--ease-out);
+  }
+
+  [data-arm-placed]:global(.is-clearing) :global(use) {
+    opacity: 0;
+  }
+
+  [data-arm-held],
+  [data-arm-incoming] {
+    transition: opacity 0.12s;
+  }
+
+  .arm__hint {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.75rem;
+    margin: 0;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: rgb(13 15 18 / 0.7);
+    border: 1px solid var(--border);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--fg-muted);
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  .arm.is-manual .arm__hint,
+  .arm.is-static .arm__hint {
+    opacity: 0;
+  }
+
+  .arm__hint-touch {
+    display: none;
+  }
+
+  @media (hover: none) {
+    .arm__hint-mouse {
+      display: none;
+    }
+
+    .arm__hint-touch {
+      display: inline;
+    }
+  }
+
+  .arm__hud {
+    border-top: 1px solid var(--border);
+  }
+
+  .arm__hud dl {
+    display: grid;
+    grid-template-columns: repeat(7, auto);
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding: 0.75rem 1rem 0.85rem;
+  }
+
+  .arm__hud div {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .arm__hud dt {
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .arm__hud dd {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .arm__hud dl {
+      grid-template-columns: repeat(4, auto);
+    }
+
+    .arm__hint {
+      position: static;
+      display: block;
+      width: fit-content;
+      margin: -0.25rem auto 0.75rem;
+    }
+
+    .arm.is-manual .arm__hint {
+      opacity: 1;
+    }
+  }
+</style>

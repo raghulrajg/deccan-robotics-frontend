@@ -1,0 +1,356 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Engagements from '@/components/home/Engagements.astro';
+import Process from '@/components/home/Process.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Faq from '@/components/ui/Faq.astro';
+import CtaBand from '@/components/ui/CtaBand.astro';
+import type { IconName } from '@/lib/icons';
+import { faqs } from '@/data/content';
+import { href } from '@/lib/url';
+import { breadcrumbSchema } from '@/lib/schema';
+
+const week = [
+  { day: 'Mon', title: 'Plan', text: 'Priorities, risks and the goal for the week — agreed with you.' },
+  { day: 'Tue–Thu', title: 'Build & test', text: 'Design, code, build and measure. Blockers raised the same day.' },
+  { day: 'Fri', title: 'Demo & report', text: 'Live or recorded demo, plus a short written update and decision log.' },
+];
+
+const commitments: { icon: IconName; title: string; text: string }[] = [
+  {
+    icon: 'users',
+    title: 'Direct access to engineers',
+    text: 'You talk to the people doing the work — no account-manager relay.',
+  },
+  {
+    icon: 'git-branch',
+    title: 'Shared, version-controlled work',
+    text: 'Code, schematics and CAD live in repositories you can see from day one.',
+  },
+  {
+    icon: 'milestone',
+    title: 'Milestones with acceptance criteria',
+    text: 'Each phase has measurable success criteria, agreed before it starts.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Confidential by default',
+    text: 'Mutual NDAs on request and careful handling of your data and IP.',
+  },
+];
+
+const handover: [string, string, string][] = [
+  ['01', 'Source code', 'Git repository with build, flash and test instructions'],
+  ['02', 'Electronics', 'Schematics, PCB layout, Gerbers and assembly files'],
+  ['03', 'Mechanical', 'Native CAD + STEP, drawings and print/CNC files'],
+  ['04', 'Bill of materials', 'Costed BOM with sourcing notes and alternates'],
+  ['05', 'Test evidence', 'Test plans, logs and reports against acceptance criteria'],
+  ['06', 'Documentation', 'Architecture, setup, user and maintenance guides'],
+];
+
+const commercialFaqs = faqs.filter((f) =>
+  /(price|NDA|intellectual|in-house|manufactur)/i.test(f.q),
+);
+
+const schema = [breadcrumbSchema(Astro.site, [{ label: 'How we work', href: '/how-we-work/' }])];
+---
+
+<BaseLayout
+  title="How we work — Consulting, Proof of Concept & Prototyping"
+  description="How Deccan Robotics runs hardware projects: consulting, proofs of concept and prototypes, delivered in short visible steps with decision gates and a complete handover."
+  schema={schema}
+>
+  <PageHero
+    eyebrow="How we work"
+    title="A clear path from <em>question to prototype.</em>"
+    lead="We run hardware projects in short, visible steps — so you can see progress every week, steer every decision and stop at any gate with everything we’ve built."
+    crumbs={[{ label: 'How we work' }]}
+    seed={17}
+  >
+    <a class="btn btn--primary" href={href('/contact/')}>
+      Start a project
+      <Icon name="arrow-right" class="arrow" strokeWidth={2} />
+    </a>
+    <a class="btn btn--secondary" href="#handover">What you get</a>
+  </PageHero>
+
+  <Engagements detailed />
+  <Process index="" />
+
+  <!-- Working together -->
+  <section class="section theme-light" aria-labelledby="together-title">
+    <div class="container">
+      <SectionHeader
+        id="together-title"
+        eyebrow="Working together"
+        title="A weekly rhythm <em>you can rely on.</em>"
+        lead="Predictable communication is half of a good engineering partnership. Here’s what a normal week looks like."
+        align="split"
+      />
+
+      <ol role="list" class="week" data-reveal-stagger="90">
+        {
+          week.map((w) => (
+            <li class="week__item" data-reveal>
+              <span class="week__day mono">{w.day}</span>
+              <span class="week__bar" aria-hidden="true">
+                <span />
+              </span>
+              <h3 class="h4">{w.title}</h3>
+              <p>{w.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <ul role="list" class="commit" data-reveal-stagger="70">
+        {
+          commitments.map((c) => (
+            <li class="commit__item" data-reveal>
+              <span class="icon-tile">
+                <Icon name={c.icon} />
+              </span>
+              <div>
+                <h3 class="h4">{c.title}</h3>
+                <p>{c.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Handover -->
+  <section class="section theme-dark" id="handover" aria-labelledby="handover-title">
+    <div class="container handover">
+      <SectionHeader
+        id="handover-title"
+        eyebrow="Handover pack"
+        title="Everything you need <em>to carry it forward.</em>"
+        lead="Whether the next step is production, certification or your own team taking over, you get a complete, organised package — not a zip file of loose ends."
+      />
+      <div class="bom ticks" data-reveal>
+        <div class="bom__head mono" aria-hidden="true">
+          <span>Item</span>
+          <span>Deliverable</span>
+          <span>Contents</span>
+        </div>
+        <ul role="list">
+          {
+            handover.map(([n, item, desc]) => (
+              <li class="bom__row">
+                <span class="mono bom__n">{n}</span>
+                <span class="bom__item">{item}</span>
+                <span class="bom__desc">{desc}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="bom__foot mono" aria-hidden="true">
+          <span>Rev A · Released</span>
+          <span><Icon name="check" size={14} strokeWidth={3} /> Ready for handover</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section theme-light" aria-labelledby="hfaq-title">
+    <div class="container hfaq">
+      <SectionHeader id="hfaq-title" eyebrow="FAQ" title="Commercial <em>questions.</em>" />
+      <Faq items={commercialFaqs} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .week {
+    display: grid;
+    grid-template-columns: 1fr 2.4fr 1fr;
+    gap: var(--space-m);
+    padding: 0;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .week__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+  }
+
+  .week__day {
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+
+  .week__bar {
+    display: block;
+    height: 10px;
+    margin-block: 0.25rem var(--space-xs);
+    border-radius: 3px;
+    background: var(--paper-200);
+    overflow: hidden;
+  }
+
+  .week__bar span {
+    display: block;
+    height: 100%;
+    background: var(--ink-600);
+    border-radius: 3px;
+  }
+
+  .week__item:nth-child(2) .week__bar span {
+    background: repeating-linear-gradient(
+      135deg,
+      var(--laterite-500) 0 6px,
+      var(--laterite-400) 6px 12px
+    );
+  }
+
+  .week__item:nth-child(3) .week__bar span {
+    background: #2fb36e;
+  }
+
+  .week__item p {
+    color: var(--fg-muted);
+  }
+
+  .commit {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+
+  .commit__item {
+    display: flex;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+
+  .commit__item div {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .commit__item p {
+    color: var(--fg-muted);
+  }
+
+  .handover {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+    gap: var(--space-xl) clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .bom {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+  }
+
+  .bom__head,
+  .bom__row {
+    display: grid;
+    grid-template-columns: 3.5rem 11rem 1fr;
+    gap: var(--space-s);
+    align-items: baseline;
+    padding: 0.95rem 1.25rem;
+  }
+
+  .bom__head {
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  .bom ul {
+    padding: 0;
+  }
+
+  .bom__row + .bom__row {
+    border-top: 1px dashed var(--border);
+  }
+
+  .bom__n {
+    font-size: var(--step--1);
+    color: var(--accent-text);
+  }
+
+  .bom__item {
+    font-weight: 600;
+  }
+
+  .bom__desc {
+    color: var(--fg-muted);
+  }
+
+  .bom__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border-strong);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+  }
+
+  .bom__foot span:last-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--signal);
+  }
+
+  .hfaq {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: var(--space-xl) clamp(2rem, 1rem + 5vw, 6rem);
+    align-items: start;
+  }
+
+  @media (max-width: 1000px) {
+    .handover,
+    .hfaq {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .week,
+    .commit {
+      grid-template-columns: 1fr;
+    }
+
+    .commit__item {
+      padding: var(--space-m);
+    }
+
+    .bom__head {
+      display: none;
+    }
+
+    .bom__row {
+      grid-template-columns: 2.5rem 1fr;
+      row-gap: 0.2rem;
+    }
+
+    .bom__desc {
+      grid-column: 2;
+    }
+  }
+</style>

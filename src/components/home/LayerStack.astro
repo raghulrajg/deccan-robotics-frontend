@@ -1,0 +1,353 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { layers } from '@/data/content';
+
+interface Props {
+  index?: string;
+}
+const { index = '04' } = Astro.props;
+
+// Isometric slabs, bottom (01) → top (06) for painter's order.
+const CX = 220;
+const W = 150;
+const H = 75;
+const T = 18;
+const GAP = 42;
+const BASE_Y = 300;
+const slabs = [...layers].reverse().map((l, i) => {
+  const cy = BASE_Y - i * GAP;
+  return {
+    ...l,
+    cy,
+    top: `${CX - W},${cy} ${CX},${cy - H} ${CX + W},${cy} ${CX},${cy + H}`,
+    left: `${CX - W},${cy} ${CX},${cy + H} ${CX},${cy + H + T} ${CX - W},${cy + T}`,
+    right: `${CX},${cy + H} ${CX + W},${cy} ${CX + W},${cy + T} ${CX},${cy + H + T}`,
+  };
+});
+const defaultOpen = '04';
+---
+
+<section class="section theme-dark stack" aria-labelledby="stack-title" data-stack>
+  <div class="container">
+    <SectionHeader
+      id="stack-title"
+      index={index}
+      eyebrow="Capabilities"
+      title="Silicon to cloud, <em>layer by layer.</em>"
+      lead="The Deccan plateau was built from layer upon layer of basalt. Great machines are built the same way — and the hardest bugs live between the layers. We engineer every one of them, and the interfaces in between."
+      align="split"
+    />
+
+    <div class="stack__layout">
+      <div class="stack__visual" aria-hidden="true" data-reveal>
+        <svg viewBox="0 0 440 400" class="stack__svg">
+          <defs>
+            <linearGradient id="slab-top-hi" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ff8a4f"></stop>
+              <stop offset="1" stop-color="#ff5f1f"></stop>
+            </linearGradient>
+          </defs>
+          {
+            slabs.map((s) => (
+              <g class="slab" data-slab={s.n} data-active={s.n === defaultOpen ? '' : undefined}>
+                <polygon points={s.left} class="slab__left" />
+                <polygon points={s.right} class="slab__right" />
+                <polygon points={s.top} class="slab__top" />
+                <path
+                  d={`M${CX - W * 0.5} ${s.cy - H * 0.5}L${CX + W * 0.5} ${s.cy + H * 0.5}M${CX - W * 0.5} ${s.cy + H * 0.5}L${CX + W * 0.5} ${s.cy - H * 0.5}`}
+                  class="slab__mark"
+                />
+                <text x={CX + W + 14} y={s.cy + T / 2 + 4} class="slab__num">
+                  {s.n}
+                </text>
+              </g>
+            ))
+          }
+        </svg>
+      </div>
+
+      <div class="stack__list" data-reveal style="--reveal-delay: 100ms">
+        {
+          layers.map((l) => {
+            const open = l.n === defaultOpen;
+            return (
+              <div class="layer" data-layer={l.n} data-open={open ? '' : undefined}>
+                <h3 class="layer__heading">
+                  <button
+                    type="button"
+                    class="layer__btn"
+                    aria-expanded={open ? 'true' : 'false'}
+                    aria-controls={`layer-${l.n}`}
+                    id={`layer-btn-${l.n}`}
+                  >
+                    <span class="layer__n mono">{l.n}</span>
+                    <Icon name={l.icon} class="layer__icon" />
+                    <span class="layer__name">{l.name}</span>
+                    <Icon name="plus" class="layer__plus" size={18} strokeWidth={2} />
+                  </button>
+                </h3>
+                <div class="layer__panel" id={`layer-${l.n}`} role="region" aria-labelledby={`layer-btn-${l.n}`}>
+                  <div class="layer__inner">
+                    <p>{l.text}</p>
+                    <ul role="list" class="layer__tools">
+                      {l.tools.map((t) => (
+                        <li class="chip">{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-stack]').forEach((root) => {
+    const items = [...root.querySelectorAll<HTMLElement>('[data-layer]')];
+    const slabs = [...root.querySelectorAll<SVGGElement>('[data-slab]')];
+
+    const highlight = (n: string | null) => {
+      slabs.forEach((s) => s.toggleAttribute('data-active', s.dataset.slab === n));
+    };
+    const openLayer = (n: string) => {
+      items.forEach((item) => {
+        const on = item.dataset.layer === n;
+        item.toggleAttribute('data-open', on);
+        item.querySelector('button')?.setAttribute('aria-expanded', String(on));
+      });
+      highlight(n);
+    };
+    const current = () => items.find((i) => i.hasAttribute('data-open'))?.dataset.layer ?? null;
+
+    items.forEach((item) => {
+      const n = item.dataset.layer!;
+      const btn = item.querySelector('button')!;
+      btn.addEventListener('click', () => {
+        if (item.hasAttribute('data-open')) {
+          item.removeAttribute('data-open');
+          btn.setAttribute('aria-expanded', 'false');
+          highlight(null);
+        } else {
+          openLayer(n);
+        }
+      });
+      item.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') highlight(n);
+      });
+      item.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse') highlight(current());
+      });
+    });
+  });
+</script>
+
+<style>
+  .stack__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+  }
+
+  .stack__visual {
+    position: relative;
+  }
+
+  .stack__visual::before {
+    content: '';
+    position: absolute;
+    inset: 10% 5%;
+    background: radial-gradient(closest-side, rgb(255 95 31 / 0.14), transparent);
+    filter: blur(10px);
+  }
+
+  .stack__svg {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .slab {
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .slab__top {
+    fill: #1f252c;
+    stroke: rgb(255 255 255 / 0.22);
+    stroke-width: 1;
+    transition: fill 0.4s;
+  }
+
+  .slab__left {
+    fill: #14181d;
+    stroke: rgb(255 255 255 / 0.12);
+    transition: fill 0.4s;
+  }
+
+  .slab__right {
+    fill: #191e24;
+    stroke: rgb(255 255 255 / 0.12);
+    transition: fill 0.4s;
+  }
+
+  .slab__mark {
+    stroke: rgb(255 255 255 / 0.06);
+    stroke-width: 1;
+  }
+
+  .slab__num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    fill: var(--fg-subtle);
+    transition: fill 0.3s;
+  }
+
+  .slab[data-active] {
+    transform: translate(26px, 15px);
+  }
+
+  .slab[data-active] .slab__top {
+    fill: url(#slab-top-hi);
+    stroke: #ffb38a;
+  }
+
+  .slab[data-active] .slab__left {
+    fill: #b33a0a;
+  }
+
+  .slab[data-active] .slab__right {
+    fill: #d94a0f;
+  }
+
+  .slab[data-active] .slab__mark {
+    stroke: rgb(13 15 18 / 0.25);
+  }
+
+  .slab[data-active] .slab__num {
+    fill: var(--laterite-400);
+  }
+
+  .stack__list {
+    border-top: 1px solid var(--border);
+  }
+
+  .layer {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .layer__heading {
+    font: inherit;
+  }
+
+  .layer__btn {
+    display: grid;
+    grid-template-columns: 2.25rem 1.5rem 1fr auto;
+    align-items: center;
+    gap: var(--space-s);
+    width: 100%;
+    padding: 1.05rem 0.25rem;
+    text-align: left;
+    color: var(--fg-muted);
+    transition: color 0.2s;
+  }
+
+  .layer__btn:hover,
+  [data-open] > .layer__heading .layer__btn {
+    color: var(--fg);
+  }
+
+  .layer__n {
+    font-size: var(--step--1);
+    color: var(--fg-subtle);
+  }
+
+  [data-open] .layer__n {
+    color: var(--accent-text);
+  }
+
+  .layer__btn :global(.layer__icon) {
+    width: 20px;
+    height: 20px;
+  }
+
+  .layer__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 700;
+    font-stretch: 104%;
+    letter-spacing: -0.01em;
+  }
+
+  .layer__btn :global(.layer__plus) {
+    transition: transform 0.3s var(--ease-out);
+  }
+
+  [data-open] .layer__btn :global(.layer__plus) {
+    transform: rotate(45deg);
+    color: var(--accent-text);
+  }
+
+  .layer__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s var(--ease-out);
+  }
+
+  [data-open] > .layer__panel {
+    grid-template-rows: 1fr;
+  }
+
+  .layer__inner {
+    overflow: hidden;
+    padding-left: calc(2.25rem + 1.5rem + 2 * var(--space-s));
+  }
+
+  .layer:not([data-open]) .layer__inner {
+    visibility: hidden;
+    transition: visibility 0s 0.4s;
+  }
+
+  /* Without JavaScript, show every layer's details. */
+  :global(.no-js) .layer__panel {
+    grid-template-rows: 1fr;
+  }
+
+  :global(.no-js) .layer .layer__inner {
+    visibility: visible;
+  }
+
+  .layer__inner p {
+    color: var(--fg-muted);
+    max-width: 52ch;
+  }
+
+  .layer__tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: var(--space-s) 0 1.4rem;
+  }
+
+  @media (max-width: 960px) {
+    .stack__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .stack__svg {
+      max-width: 400px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .layer__inner {
+      padding-left: 0.25rem;
+    }
+  }
+</style>

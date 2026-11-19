@@ -1,0 +1,80 @@
+---
+/**
+ * Deccan Robotics logo.
+ * Mark: a hexagonal basalt column (the Deccan Traps) carrying a "D" whose bowl
+ * is a rotary joint, with the joint axis at its centre.
+ */
+interface Props {
+  class?: string;
+  showWordmark?: boolean;
+  size?: number;
+}
+const { class: className, showWordmark = true, size = 34 } = Astro.props;
+---
+
+<span class:list={['logo', className]}>
+  <svg
+    class="logo__mark"
+    width={size}
+    height={size}
+    viewBox="0 0 32 32"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M16 2 28.12 9v14L16 30 3.88 23V9Z"
+      fill="var(--laterite-500)"
+      stroke="var(--laterite-500)"
+      stroke-width="2"
+      stroke-linejoin="round"></path>
+    <path
+      d="M11.1 9h2.8a7 7 0 0 1 0 14h-2.8Zm2.8 2.8v8.4a4.2 4.2 0 0 0 0-8.4Z"
+      fill="var(--basalt-950)"
+      fill-rule="evenodd"></path>
+    <circle cx="15.7" cy="16" r="1.15" fill="var(--basalt-950)"></circle>
+  </svg>
+  {
+    showWordmark && (
+      <span class="logo__type">
+        <span class="logo__name">Deccan</span>{' '}<span class="logo__sub">Robotics</span>
+      </span>
+    )
+  }
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--fg);
+  }
+
+  .logo__mark {
+    flex: none;
+  }
+
+  .logo__type {
+    display: grid;
+    line-height: 1;
+  }
+
+  .logo__name {
+    font-family: var(--font-display);
+    font-size: 1.12rem;
+    font-weight: 800;
+    font-stretch: 125%;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .logo__sub {
+    margin-top: 0.28rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.43em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { industries } from '@/data/content';
+
+interface Props {
+  index?: string;
+}
+const { index = '06' } = Astro.props;
+---
+
+<section class="section theme-light section--alt" aria-labelledby="industries-title">
+  <div class="container">
+    <SectionHeader
+      id="industries-title"
+      index={index}
+      eyebrow="Industries"
+      title="For the people who make, move <em>and grow things.</em>"
+      lead="Our work travels well between sectors — the physics of motors, sensors and control loops don’t change. Here’s where we see the biggest opportunities."
+      align="split"
+    />
+
+    <ul role="list" class="ind" data-reveal-stagger="60">
+      {
+        industries.map((ind) => (
+          <li class="ind__card" data-reveal>
+            <Icon name={ind.icon} class="ind__icon" />
+            <h3 class="ind__name">{ind.name}</h3>
+            <p>{ind.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .ind {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--border-strong);
+    border-left: 1px solid var(--border-strong);
+  }
+
+  .ind__card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding: var(--space-l) var(--space-m) var(--space-xl);
+    border-right: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
+    background: transparent;
+    transition: background-color 0.3s;
+  }
+
+  .ind__card::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    width: calc(100% + 2px);
+    height: 3px;
+    background: var(--laterite-500);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease-out);
+  }
+
+  .ind__card:hover {
+    background: var(--surface);
+  }
+
+  .ind__card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .ind__card :global(.ind__icon) {
+    width: 30px;
+    height: 30px;
+    margin-bottom: var(--space-s);
+    color: var(--accent-text);
+    stroke-width: 1.5;
+  }
+
+  .ind__name {
+    font-size: var(--step-1);
+    font-stretch: 104%;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .ind__card p {
+    color: var(--fg-muted);
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 1080px) {
+    .ind {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 520px) {
+    .ind {
+      grid-template-columns: 1fr;
+    }
+
+    .ind__card {
+      padding-bottom: var(--space-l);
+    }
+  }
+</style>

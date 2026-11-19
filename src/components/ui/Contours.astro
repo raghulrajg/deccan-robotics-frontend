@@ -1,0 +1,59 @@
+---
+import { contours, type ContourOptions } from '@/lib/contours';
+
+interface Props extends Partial<ContourOptions> {
+  class?: string;
+  width?: number;
+  height?: number;
+  /** Index of a ring to highlight in the accent colour. */
+  highlight?: number;
+}
+
+const {
+  class: className,
+  width = 1200,
+  height = 800,
+  highlight,
+  cx = width * 0.8,
+  cy = height * 0.3,
+  ...opts
+} = Astro.props;
+const paths = contours({ cx, cy, ...opts });
+---
+
+<svg
+  class:list={['contours', className]}
+  viewBox={`0 0 ${width} ${height}`}
+  preserveAspectRatio="xMidYMid slice"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    paths.map((d, i) => (
+      <path d={d} class:list={['contours__line', { 'contours__line--hi': i === highlight }]} />
+    ))
+  }
+</svg>
+
+<style>
+  .contours {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .contours__line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .contours__line--hi {
+    stroke: var(--laterite-500);
+    stroke-dasharray: 3 5;
+    opacity: 0.9;
+  }
+</style>
