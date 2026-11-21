@@ -48,17 +48,19 @@ export const site: SiteConfig = {
   },
 
   /**
-   * Contact form delivery — choose one:
-   * - web3formsKey: free access key from https://web3forms.com. Every enquiry is
-   *   emailed to the address you registered the key with. The key is designed
-   *   to be public, so it is safe to keep here.
+   * Contact form delivery:
+   * - web3formsKey: Web3Forms access key (https://web3forms.com). Every enquiry is
+   *   emailed to the inbox the key was created for. It is NOT stored in the code:
+   *   it comes from the PUBLIC_WEB3FORMS_KEY environment variable at build time,
+   *   which the GitHub workflow fills from the repository secret WEB3FORMS_KEY.
+   *   For local builds, put PUBLIC_WEB3FORMS_KEY=... in a .env file (git-ignored).
    * - endpoint: any other service that accepts form POSTs (e.g. Formspree:
    *   'https://formspree.io/f/abcdwxyz').
-   * With both empty, the form opens the visitor's email app with the message
+   * With neither set, the form opens the visitor's email app with the message
    * pre-filled and addressed to `email`.
    */
   form: {
-    web3formsKey: '',
+    web3formsKey: (import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '').trim(),
     endpoint: '',
   },
 };

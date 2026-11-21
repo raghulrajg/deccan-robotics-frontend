@@ -40,11 +40,19 @@ jobs:
         run: npm run check
 
       - name: Build
-        run: npm run build
+        run: |
+          if [ -n "$PUBLIC_WEB3FORMS_KEY" ]; then
+            echo "Contact form: Web3Forms key configured"
+          else
+            echo "::warning::Repository secret WEB3FORMS_KEY is not set; the contact form will fall back to the visitor's email app."
+          fi
+          npm run build
         env:
           # Works for project sites (https://<user>.github.io/<repo>/) and custom domains alike.
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Kept out of the repository; add it under Settings → Secrets and variables → Actions.
+          PUBLIC_WEB3FORMS_KEY: ${{ secrets.WEB3FORMS_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4

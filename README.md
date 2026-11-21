@@ -33,13 +33,19 @@ Contact details live in [`src/config.ts`](src/config.ts):
 
 ### Receiving project enquiries
 
-By default the **Project enquiry** form opens the visitor's own email app with the message filled in and addressed to `email`. To have every enquiry delivered straight to your inbox instead:
+The **Project enquiry** form is delivered by [Web3Forms](https://web3forms.com): each enquiry arrives as an email with all the answers, and **Reply** goes straight to the visitor.
 
-1. Go to [web3forms.com](https://web3forms.com), choose **Create your Access Key**, and enter the inbox that should receive enquiries (e.g. `vishal@deccanrobotics.in`).
-2. Copy the access key from the email Web3Forms sends you.
-3. Paste it into `form.web3formsKey` in `src/config.ts`, then commit and push. The site redeploys automatically.
+The access key is **not stored in this repository**. The deploy workflow reads it from an encrypted repository secret:
 
-Each enquiry then arrives as an email with all the form answers, and **Reply** goes straight to the visitor. The access key is designed to be public, so it is safe to commit. Any other form service that accepts POSTs (e.g. Formspree) works too: put its URL in `form.endpoint`.
+1. In GitHub, open **Settings → Secrets and variables → Actions → New repository secret**.
+2. Name: `WEB3FORMS_KEY`. Secret: your Web3Forms access key. Click **Add secret**.
+3. Re-run the deploy (**Actions → Deploy to GitHub Pages → Run workflow**).
+
+For a local build, copy `.env.example` to `.env` (git-ignored) and fill in `PUBLIC_WEB3FORMS_KEY`.
+
+> A static website's form has to send the key from the visitor's browser, so the key is visible in the published page source. Web3Forms designs it that way: the key can only deliver messages to your own inbox. Keeping it out of the repository simply keeps it out of the public code.
+
+Without a key, the form falls back to opening the visitor's email app with the message filled in. Any other form service that accepts POSTs (e.g. Formspree) can be used by putting its URL in `form.endpoint` in `src/config.ts`.
 
 ## Before you go live ✅
 
