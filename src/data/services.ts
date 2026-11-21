@@ -29,7 +29,7 @@ export const services: Service[] = [
     name: 'Robotics',
     icon: 'bot',
     illustration: 'amr',
-    seoTitle: 'Robotics Engineering — AMRs, Manipulators & ROS 2 Development',
+    seoTitle: 'Robotics Engineering: AMRs, Manipulators & ROS 2 Development',
     seoDescription:
       'Robot design, ROS 2 software, motion control, perception and system integration. Deccan Robotics takes mobile robots and manipulators from proof of concept to field-ready prototype.',
     summary: 'Mobile robots, manipulators and the autonomy that drives them.',
@@ -40,7 +40,7 @@ export const services: Service[] = [
       'Perception, SLAM & navigation',
     ],
     headline: 'Robots that leave the lab and do real work.',
-    lead: 'We design, build and integrate mobile robots, manipulators and custom robotic systems — from mechanisms and motor control to ROS 2 autonomy, perception and fleet software.',
+    lead: 'We design, build and integrate mobile robots, manipulators and custom robotic systems, from mechanisms and motor control to ROS 2 autonomy, perception and fleet software.',
     capabilities: [
       {
         icon: 'route',
@@ -76,7 +76,7 @@ export const services: Service[] = [
     projects: [
       {
         title: 'Autonomous material transport',
-        text: 'An AMR that maps a facility, navigates between stations, docks and hands off loads — with obstacle avoidance and speed zones.',
+        text: 'An AMR that maps a facility, navigates between stations, docks and hands off loads, with obstacle avoidance and speed zones.',
         timeline: 'POC 4–6 weeks',
         tags: ['ROS 2 Nav2', 'LiDAR SLAM', 'Docking'],
       },
@@ -118,11 +118,11 @@ export const services: Service[] = [
       },
       {
         q: 'Can you add autonomy to a machine we already have?',
-        a: 'Often, yes. We retrofit sensors, compute and ROS 2 software onto existing vehicles and machines — starting with a short feasibility check of the platform.',
+        a: 'Often, yes. We retrofit sensors, compute and ROS 2 software onto existing vehicles and machines, starting with a short feasibility check of the platform.',
       },
       {
         q: 'Do you still work with ROS 1?',
-        a: 'We can maintain and migrate ROS 1 systems, but we recommend ROS 2 for anything new — it is where the ecosystem, tooling and long-term support are.',
+        a: 'We can maintain and migrate ROS 1 systems, but we recommend ROS 2 for anything new. It is where the ecosystem, tooling and long-term support are.',
       },
     ],
   },
@@ -131,9 +131,9 @@ export const services: Service[] = [
     name: 'Embedded Systems',
     icon: 'cpu',
     illustration: 'pcb',
-    seoTitle: 'Embedded Systems — PCB Design, Firmware & IoT Product Development',
+    seoTitle: 'Embedded Systems: PCB Design, Firmware & IoT Product Development',
     seoDescription:
-      'Custom electronics and firmware: schematic and PCB design, bare-metal and RTOS firmware, sensors, connectivity, low-power design and OTA updates — from prototype to production-ready.',
+      'Custom electronics and firmware: schematic and PCB design, bare-metal and RTOS firmware, sensors, connectivity, low-power design and OTA updates, from prototype to production-ready.',
     summary: 'Custom electronics and firmware that are reliable, efficient and connected.',
     highlights: [
       'Schematic & PCB design',
@@ -142,7 +142,7 @@ export const services: Service[] = [
       'BLE, Wi-Fi, LoRa & cellular IoT',
     ],
     headline: 'Electronics and firmware you can build a product on.',
-    lead: 'From schematic to shipping firmware, we design custom electronics that are reliable, power-efficient and connected — and make sure they can be manufactured, tested and updated in the field.',
+    lead: 'From schematic to shipping firmware, we design custom electronics that are reliable, power-efficient and connected, and make sure they can be manufactured, tested and updated in the field.',
     capabilities: [
       {
         icon: 'circuit-board',
@@ -152,7 +152,7 @@ export const services: Service[] = [
       {
         icon: 'binary',
         title: 'Firmware development',
-        text: 'Bare-metal and RTOS firmware in C, C++ and Rust — drivers, state machines, bootloaders and tests.',
+        text: 'Bare-metal and RTOS firmware in C, C++ and Rust: drivers, state machines, bootloaders and tests.',
       },
       {
         icon: 'activity',
@@ -162,7 +162,7 @@ export const services: Service[] = [
       {
         icon: 'wifi',
         title: 'Connectivity & IoT',
-        text: 'BLE, Wi-Fi, LoRaWAN, cellular and field buses — with secure provisioning and cloud integration.',
+        text: 'BLE, Wi-Fi, LoRaWAN, cellular and field buses, with secure provisioning and cloud integration.',
       },
       {
         icon: 'battery-charging',
@@ -216,7 +216,7 @@ export const services: Service[] = [
     faqs: [
       {
         q: 'Can you take our dev-board prototype to a custom PCB?',
-        a: 'Yes — it is one of the most common starting points. We re-architect for cost, size, reliability and manufacturability while keeping what already works.',
+        a: 'Yes. It is one of the most common starting points. We re-architect for cost, size, reliability and manufacturability while keeping what already works.',
       },
       {
         q: 'Do you help with certification?',
@@ -233,9 +233,9 @@ export const services: Service[] = [
     name: 'Industrial Automation',
     icon: 'factory',
     illustration: 'conveyor',
-    seoTitle: 'Industrial Automation — PLC, Machine Vision, Retrofits & IIoT',
+    seoTitle: 'Industrial Automation: PLC, Machine Vision, Retrofits & IIoT',
     seoDescription:
-      'PLC and SCADA programming, machine retrofits, machine-vision inspection, material handling and IIoT monitoring — automation designed for real plant conditions.',
+      'PLC and SCADA programming, machine retrofits, machine-vision inspection, material handling and IIoT monitoring. Automation designed for real plant conditions.',
     summary: 'Smarter lines, safer machines and data you can act on.',
     highlights: [
       'PLC, HMI & SCADA',
@@ -244,12 +244,12 @@ export const services: Service[] = [
       'IIoT monitoring & dashboards',
     ],
     headline: 'Automation that pays for itself on the shop floor.',
-    lead: 'We help manufacturers automate repetitive work, modernise existing machines and turn machine data into decisions — with PLC, vision, robotics and IIoT solutions built for real plant conditions.',
+    lead: 'We help manufacturers automate repetitive work, modernise existing machines and turn machine data into decisions, with PLC, vision, robotics and IIoT solutions built for real plant conditions.',
     capabilities: [
       {
         icon: 'sliders-horizontal',
         title: 'PLC, HMI & SCADA',
-        text: 'Control logic, operator screens and supervisory systems — structured, commented and maintainable.',
+        text: 'Control logic, operator screens and supervisory systems that are structured, commented and maintainable.',
       },
       {
         icon: 'wrench',
@@ -280,7 +280,7 @@ export const services: Service[] = [
     projects: [
       {
         title: 'Vision-based quality inspection',
-        text: 'Detect defects, verify assembly and reject bad parts automatically — with images logged for traceability.',
+        text: 'Detect defects, verify assembly and reject bad parts automatically, with images logged for traceability.',
         timeline: 'POC 3–5 weeks',
         tags: ['Machine vision', 'Reject logic', 'Traceability'],
       },
@@ -292,7 +292,7 @@ export const services: Service[] = [
       },
       {
         title: 'Machine monitoring (IIoT)',
-        text: 'Non-invasive sensors and a dashboard that shows OEE, downtime reasons and energy — without touching the PLC.',
+        text: 'Non-invasive sensors and a dashboard that shows OEE, downtime reasons and energy, without touching the PLC.',
         timeline: 'Pilot 3–6 weeks',
         tags: ['Retrofit sensors', 'OEE', 'Dashboards'],
       },
@@ -326,7 +326,7 @@ export const services: Service[] = [
       },
       {
         q: 'How do we know automation is worth the investment?',
-        a: 'We start with a short assessment that estimates payback — cycle time, labour, scrap and downtime — so you can decide before committing to a build.',
+        a: 'We start with a short assessment that estimates payback from cycle time, labour, scrap and downtime, so you can decide before committing to a build.',
       },
     ],
   },
@@ -335,9 +335,9 @@ export const services: Service[] = [
     name: 'Software Development',
     icon: 'code-xml',
     illustration: 'software',
-    seoTitle: 'Software Development — Web & Mobile Apps, IoT Platforms & AI',
+    seoTitle: 'Software Development: Web & Mobile Apps, IoT Platforms & AI',
     seoDescription:
-      'Custom software for connected products and industry: web and mobile apps, IoT and cloud platforms, dashboards, integrations and AI — built by engineers who understand the hardware underneath.',
+      'Custom software for connected products and industry: web and mobile apps, IoT and cloud platforms, dashboards, integrations and AI, built by engineers who understand the hardware underneath.',
     summary: 'Web, mobile and cloud software that connects your machines to your business.',
     highlights: [
       'Web apps & dashboards',
@@ -346,12 +346,12 @@ export const services: Service[] = [
       'AI & computer vision',
     ],
     headline: 'Software that connects machines to your business.',
-    lead: 'We build the web apps, mobile apps, cloud platforms and AI that sit on top of your hardware — so devices, data and people work as one system. Engineered by a team that understands the hardware underneath.',
+    lead: 'We build the web apps, mobile apps, cloud platforms and AI that sit on top of your hardware, so devices, data and people work as one system. Engineered by a team that understands the hardware underneath.',
     capabilities: [
       {
         icon: 'layout-dashboard',
         title: 'Web apps & dashboards',
-        text: 'Operator dashboards, customer portals and internal tools — responsive, secure and fast.',
+        text: 'Operator dashboards, customer portals and internal tools that are responsive, secure and fast.',
       },
       {
         icon: 'smartphone',
@@ -388,19 +388,19 @@ export const services: Service[] = [
       },
       {
         title: 'Companion mobile app',
-        text: 'An Android and iOS app that pairs with your device over Bluetooth, sets it up and shows its data — with cloud sync.',
+        text: 'An Android and iOS app that pairs with your device over Bluetooth, sets it up and shows its data, with cloud sync.',
         timeline: 'MVP 6–10 weeks',
         tags: ['BLE', 'Flutter', 'Cloud sync'],
       },
       {
         title: 'Vision AI for quality checks',
-        text: 'Train and deploy a model that spots defects or counts parts from camera images — on an edge device or in the cloud.',
+        text: 'Train and deploy a model that spots defects or counts parts from camera images, on an edge device or in the cloud.',
         timeline: 'POC 3–5 weeks',
         tags: ['PyTorch', 'OpenCV', 'Edge deployment'],
       },
       {
         title: 'Factory systems integration',
-        text: 'Connect machines to ERP or MES so production data, orders and maintenance flow automatically — no more spreadsheets.',
+        text: 'Connect machines to ERP or MES so production data, orders and maintenance flow automatically. No more spreadsheets.',
         timeline: 'Project 4–8 weeks',
         tags: ['OPC UA', 'REST APIs', 'ERP / MES'],
       },

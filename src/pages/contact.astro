@@ -27,14 +27,14 @@ const schema = [
 ---
 
 <BaseLayout
-  title="Contact — Start a Project"
+  title="Contact Us"
   description="Tell Deccan Robotics about your robotics, embedded, automation or software project. We’ll reply with questions, a first view on feasibility and the fastest path to a working prototype."
   schema={schema}
 >
   <PageHero
     eyebrow="Contact"
     title="Let’s build something <em>that works.</em>"
-    lead="Tell us about your project — even if it’s only an idea. The more context you share, the more useful our first conversation will be."
+    lead="Tell us about your project, even if it’s only an idea. The more context you share, the more useful our first conversation will be."
     crumbs={[{ label: 'Contact' }]}
     seed={9}
   />
@@ -230,7 +230,7 @@ const schema = [
         <div class="contact__block contact__nda">
           <Icon name="shield-check" class="icon" />
           <p>
-            <strong>Confidential by default.</strong> Share only what you’re comfortable with — we can sign a
+            <strong>Confidential by default.</strong> Share only what you’re comfortable with. We can sign a
             mutual NDA before going deeper.
           </p>
         </div>
@@ -289,7 +289,7 @@ const schema = [
       if (value(data, '_gotcha')) return; // bot
       const name = value(data, 'name');
       const company = value(data, 'company');
-      const subject = `Project enquiry — ${name}${company ? ` (${company})` : ''}`;
+      const subject = `Project enquiry: ${name}${company ? ` (${company})` : ''}`;
 
       if (endpoint) {
         // One clean field per question (checkbox groups joined), without the spam trap.
@@ -313,7 +313,7 @@ const schema = [
           form.reset();
           setStatus(
             'ok',
-            '<strong>Thanks — your message has been sent.</strong> We’ll get back to you by email shortly.',
+            '<strong>Thanks, your message has been sent.</strong> We’ll get back to you by email shortly.',
           );
         } catch {
           setStatus(
@@ -339,7 +339,7 @@ const schema = [
         value(data, 'timeline') && `Timeline: ${value(data, 'timeline')}`,
         value(data, 'nda') && 'NDA requested: Yes',
       ].filter((line): line is string => Boolean(line));
-      const lines = [value(data, 'message'), '', '—', ...details];
+      const lines = [value(data, 'message'), '', '----', ...details];
       window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
       setStatus(
         'info',

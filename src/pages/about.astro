@@ -14,7 +14,7 @@ const values: { icon: IconName; title: string; text: string }[] = [
   {
     icon: 'target',
     title: 'Candour',
-    text: 'If something won’t work, you’ll hear it from us early — with data, and with an alternative.',
+    text: 'If something won’t work, you’ll hear it from us early, with data and an alternative.',
   },
   {
     icon: 'flask-conical',
@@ -51,7 +51,7 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' 
   <PageHero
     eyebrow="About us"
     title="Engineering with <em>deep foundations.</em>"
-    lead={`${site.name} is a robotics, embedded systems, automation and software engineering studio from India. We help companies turn ambitious ideas into machines that work — and keep working.`}
+    lead={`${site.name} is a robotics, embedded systems, automation and software engineering studio from India. We help companies turn ambitious ideas into machines that work and keep working.`}
     crumbs={[{ label: 'About' }]}
     split
     seed={13}
@@ -63,7 +63,7 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' 
     <a class="btn btn--secondary" href={href('/services/')}>What we do</a>
     <div slot="visual" class="about-visual">
       <BasaltColumns />
-      <p class="about-visual__caption mono">Fig. 1 — Columnar basalt, Deccan Traps</p>
+      <p class="about-visual__caption mono">Fig. 1 · Columnar basalt, Deccan Traps</p>
     </div>
   </PageHero>
 
@@ -79,18 +79,18 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' 
       <div class="story__body" data-reveal style="--reveal-delay: 120ms">
         <p class="story__lede">
           The Deccan Plateau is one of the oldest and most stable landforms on Earth. Much of it was built
-          from lava flows that cooled, layer upon layer, into the basalt of the Deccan Traps — “trap” comes
+          from lava flows that cooled, layer upon layer, into the basalt of the Deccan Traps. “Trap” comes
           from the Swedish word for stairs, after the step-like hills those layers left behind. In places the
           rock even cracked into near-perfect hexagonal columns.
         </p>
         <p>
           We think great machines are built the same way: on solid foundations, one carefully engineered
-          layer at a time — mechanics, electronics, firmware, control, autonomy and cloud. Each layer has to
+          layer at a time: mechanics, electronics, firmware, control, autonomy and cloud. Each layer has to
           be sound on its own, and the joins between them are where projects succeed or fail.
         </p>
         <p>
           The hexagon in our logo is a basalt column seen from above. The “D” inside it is a rotary joint.
-          Our name is a reminder of where we come from — and of how we work.
+          Our name is a reminder of where we come from, and of how we work.
         </p>
       </div>
     </div>
@@ -103,7 +103,7 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' 
         <p class="mono mission__label">Mission</p>
         <h2 id="mission-title" class="h3">
           Make advanced robotics and automation practical for every company that builds, moves or grows
-          things — not only those with large R&amp;D budgets.
+          things, not only those with large R&amp;D budgets.
         </h2>
       </div>
       <div class="mission__card" data-reveal style="--reveal-delay: 100ms">
@@ -156,7 +156,7 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' 
     <div class="container join" data-reveal>
       <div>
         <p class="eyebrow">Join us</p>
-        <h2 id="join-title" class="h3 join__title">Engineers who love building real things — let’s talk.</h2>
+        <h2 id="join-title" class="h3 join__title">Love building real things? Let’s talk.</h2>
         <p class="muted">
           We’re always glad to hear from mechanical, electronics, firmware and robotics engineers, and from
           partners in fabrication, testing and manufacturing.

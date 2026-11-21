@@ -13,7 +13,7 @@ import { href } from '@/lib/url';
 import { breadcrumbSchema } from '@/lib/schema';
 
 const week = [
-  { day: 'Mon', title: 'Plan', text: 'Priorities, risks and the goal for the week — agreed with you.' },
+  { day: 'Mon', title: 'Plan', text: 'Priorities, risks and the goal for the week, agreed with you.' },
   { day: 'Tue–Thu', title: 'Build & test', text: 'Design, code, build and measure. Blockers raised the same day.' },
   { day: 'Fri', title: 'Demo & report', text: 'Live or recorded demo, plus a short written update and decision log.' },
 ];
@@ -22,7 +22,7 @@ const commitments: { icon: IconName; title: string; text: string }[] = [
   {
     icon: 'users',
     title: 'Direct access to engineers',
-    text: 'You talk to the people doing the work — no account-manager relay.',
+    text: 'You talk to the people doing the work, with no account manager in between.',
   },
   {
     icon: 'git-branch',
@@ -58,14 +58,14 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'How we work', href: '/ho
 ---
 
 <BaseLayout
-  title="How we work — Consulting, Proof of Concept & Prototyping"
+  title="How We Work: Consulting, Proof of Concept & Prototyping"
   description="How Deccan Robotics runs hardware projects: consulting, proofs of concept and prototypes, delivered in short visible steps with decision gates and a complete handover."
   schema={schema}
 >
   <PageHero
     eyebrow="How we work"
     title="A clear path from <em>question to prototype.</em>"
-    lead="We run hardware projects in short, visible steps — so you can see progress every week, steer every decision and stop at any gate with everything we’ve built."
+    lead="We run hardware projects in short, visible steps, so you can see progress every week, steer every decision and stop at any gate with everything we’ve built."
     crumbs={[{ label: 'How we work' }]}
     seed={17}
   >
@@ -130,7 +130,7 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'How we work', href: '/ho
         id="handover-title"
         eyebrow="Handover pack"
         title="Everything you need <em>to carry it forward.</em>"
-        lead="Whether the next step is production, certification or your own team taking over, you get a complete, organised package — not a zip file of loose ends."
+        lead="Whether the next step is production, certification or your own team taking over, you get a complete, organised package, not a zip file of loose ends."
       />
       <div class="bom ticks" data-reveal>
         <div class="bom__head mono" aria-hidden="true">

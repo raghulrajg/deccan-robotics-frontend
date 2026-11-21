@@ -85,7 +85,7 @@ export const phases: Phase[] = [
     n: '02',
     name: 'Prove',
     duration: '3–6 weeks',
-    text: 'Targeted experiments on the riskiest assumptions — on the bench or in the field — before anything gets expensive.',
+    text: 'Targeted experiments on the riskiest assumptions, on the bench or in the field, before anything gets expensive.',
     output: 'Working proof of concept + test data',
     gate: 'Does it work?',
   },
@@ -218,7 +218,7 @@ export const principles: { icon: IconName; title: string; text: string }[] = [
   {
     icon: 'layers',
     title: 'One team, full stack',
-    text: 'Mechanical, electronics, firmware and software engineers working from one plan — no hand-offs between vendors.',
+    text: 'Mechanical, electronics, firmware and software engineers working from one plan. No hand-offs between vendors.',
   },
   {
     icon: 'milestone',
@@ -228,7 +228,7 @@ export const principles: { icon: IconName; title: string; text: string }[] = [
   {
     icon: 'file-text',
     title: 'Documentation is a deliverable',
-    text: 'Source, schematics, CAD, BOMs and test reports — everything needed to carry the work forward.',
+    text: 'Source, schematics, CAD, BOMs and test reports: everything needed to carry the work forward.',
   },
   {
     icon: 'thermometer-sun',
@@ -282,15 +282,15 @@ export const tools = [
 export const faqs: { q: string; a: string }[] = [
   {
     q: 'What does a typical first engagement look like?',
-    a: 'Usually a short discovery or consulting phase of one to two weeks. We clarify requirements, map the technical risks and give you a costed plan for a proof of concept or prototype. You can stop there with a useful document in hand — or move straight ahead.',
+    a: 'Usually a short discovery or consulting phase of one to two weeks. We clarify requirements, map the technical risks and give you a costed plan for a proof of concept or prototype. You can stop there with a useful document in hand, or move straight ahead.',
   },
   {
     q: 'Do you sign NDAs?',
-    a: 'Yes. We are happy to sign a mutual NDA before you share anything sensitive — just mention it when you get in touch.',
+    a: 'Yes. We are happy to sign a mutual NDA before you share anything sensitive. Just mention it when you get in touch.',
   },
   {
     q: 'Who owns the intellectual property?',
-    a: 'Under our standard terms, the project deliverables we create for you — designs, source code, schematics and CAD — are yours. Any pre-existing tools or libraries we bring are declared upfront.',
+    a: 'Under our standard terms, the project deliverables we create for you (designs, source code, schematics and CAD) are yours. Any pre-existing tools or libraries we bring are declared upfront.',
   },
   {
     q: 'Can you work alongside our in-house team?',
@@ -298,7 +298,7 @@ export const faqs: { q: string; a: string }[] = [
   },
   {
     q: 'Do you handle manufacturing?',
-    a: 'We design for manufacture from the start, prepare production files and documentation, and support pilot builds with fabrication and assembly partners. We are not a contract manufacturer — but we will get you to one, ready.',
+    a: 'We design for manufacture from the start, prepare production files and documentation, and support pilot builds with fabrication and assembly partners. We are not a contract manufacturer, but we will get you to one, ready.',
   },
   {
     q: 'How do you price projects?',
