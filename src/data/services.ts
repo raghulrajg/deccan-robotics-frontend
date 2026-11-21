@@ -1,9 +1,9 @@
 import type { IconName } from '@/lib/icons';
 
-export type Illustration = 'amr' | 'pcb' | 'conveyor';
+export type Illustration = 'amr' | 'pcb' | 'conveyor' | 'software';
 
 export interface Service {
-  slug: 'robotics' | 'embedded-systems' | 'industrial-automation';
+  slug: 'robotics' | 'embedded-systems' | 'industrial-automation' | 'software-development';
   name: string;
   icon: IconName;
   illustration: Illustration;
@@ -327,6 +327,108 @@ export const services: Service[] = [
       {
         q: 'How do we know automation is worth the investment?',
         a: 'We start with a short assessment that estimates payback — cycle time, labour, scrap and downtime — so you can decide before committing to a build.',
+      },
+    ],
+  },
+  {
+    slug: 'software-development',
+    name: 'Software Development',
+    icon: 'code-xml',
+    illustration: 'software',
+    seoTitle: 'Software Development — Web & Mobile Apps, IoT Platforms & AI',
+    seoDescription:
+      'Custom software for connected products and industry: web and mobile apps, IoT and cloud platforms, dashboards, integrations and AI — built by engineers who understand the hardware underneath.',
+    summary: 'Web, mobile and cloud software that connects your machines to your business.',
+    highlights: [
+      'Web apps & dashboards',
+      'Android & iOS apps',
+      'IoT & cloud platforms',
+      'AI & computer vision',
+    ],
+    headline: 'Software that connects machines to your business.',
+    lead: 'We build the web apps, mobile apps, cloud platforms and AI that sit on top of your hardware — so devices, data and people work as one system. Engineered by a team that understands the hardware underneath.',
+    capabilities: [
+      {
+        icon: 'layout-dashboard',
+        title: 'Web apps & dashboards',
+        text: 'Operator dashboards, customer portals and internal tools — responsive, secure and fast.',
+      },
+      {
+        icon: 'smartphone',
+        title: 'Mobile apps',
+        text: 'Android and iOS apps that set up, control and monitor your devices over Bluetooth, Wi-Fi or the cloud.',
+      },
+      {
+        icon: 'cloud-cog',
+        title: 'IoT & cloud platforms',
+        text: 'Device provisioning, telemetry pipelines, OTA updates and APIs that scale from ten devices to ten thousand.',
+      },
+      {
+        icon: 'brain-circuit',
+        title: 'AI & computer vision',
+        text: 'Detection, inspection and prediction models trained on your data and deployed at the edge or in the cloud.',
+      },
+      {
+        icon: 'plug-zap',
+        title: 'Integrations & APIs',
+        text: 'Connect machines and devices to ERP, MES, CRM and third-party services through clean, documented APIs.',
+      },
+      {
+        icon: 'git-merge',
+        title: 'Testing, DevOps & support',
+        text: 'Automated tests, CI/CD, monitoring and long-term maintenance, so the software keeps working after launch.',
+      },
+    ],
+    projects: [
+      {
+        title: 'IoT monitoring platform',
+        text: 'Collect data from devices or machines, store it securely and show live dashboards and alerts to operators and customers.',
+        timeline: 'MVP 6–10 weeks',
+        tags: ['MQTT', 'Time-series data', 'Dashboards'],
+      },
+      {
+        title: 'Companion mobile app',
+        text: 'An Android and iOS app that pairs with your device over Bluetooth, sets it up and shows its data — with cloud sync.',
+        timeline: 'MVP 6–10 weeks',
+        tags: ['BLE', 'Flutter', 'Cloud sync'],
+      },
+      {
+        title: 'Vision AI for quality checks',
+        text: 'Train and deploy a model that spots defects or counts parts from camera images — on an edge device or in the cloud.',
+        timeline: 'POC 3–5 weeks',
+        tags: ['PyTorch', 'OpenCV', 'Edge deployment'],
+      },
+      {
+        title: 'Factory systems integration',
+        text: 'Connect machines to ERP or MES so production data, orders and maintenance flow automatically — no more spreadsheets.',
+        timeline: 'Project 4–8 weeks',
+        tags: ['OPC UA', 'REST APIs', 'ERP / MES'],
+      },
+    ],
+    stack: [
+      { group: 'Web & backend', items: ['React', 'Next.js', 'Astro', 'Node.js', 'Python / FastAPI', 'PostgreSQL'] },
+      { group: 'Mobile', items: ['Flutter', 'React Native', 'Kotlin', 'Swift'] },
+      { group: 'Cloud & IoT', items: ['AWS', 'Azure', 'Docker', 'MQTT', 'InfluxDB', 'Grafana'] },
+      { group: 'AI & data', items: ['PyTorch', 'OpenCV', 'TensorRT', 'ONNX', 'pandas'] },
+    ],
+    outcomes: [
+      'Source code in your own repository, with documentation',
+      'Deployed, monitored application and infrastructure as code',
+      'Automated test suite and CI/CD pipeline',
+      'Admin and user guides, plus a handover session',
+    ],
+    faqs: [
+      {
+        q: 'Do you only build software for hardware products?',
+        a: 'No. Our sweet spot is software that talks to devices and machines, but we also build standalone web apps, mobile apps, internal tools and integrations.',
+      },
+      {
+        q: 'Who owns the code?',
+        a: 'You do, under our standard terms. Everything lives in your repository from day one, so you are never locked in.',
+      },
+      {
+        q: 'Can you maintain the software after launch?',
+        a: 'Yes. We offer support and maintenance retainers covering updates, monitoring, security patches and new features.',
       },
     ],
   },

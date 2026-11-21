@@ -2,7 +2,7 @@
 import Logo from '@/components/ui/Logo.astro';
 import Icon from '@/components/ui/Icon.astro';
 import SocialIcon from '@/components/ui/SocialIcon.astro';
-import { site, services, locationLabel } from '@/config';
+import { site, services, locationLabel, phoneHref } from '@/config';
 import { href } from '@/lib/url';
 
 const year = new Date().getFullYear();
@@ -25,8 +25,8 @@ const socialLabels: Record<string, string> = {
           <Logo size={38} />
         </a>
         <p class="site-footer__about">
-          An engineering studio for robotics, embedded systems and industrial automation — from first
-          consultation to working prototype.
+          An engineering studio for robotics, embedded systems, industrial automation and software — from
+          first consultation to working prototype.
         </p>
         <span class="chip"><span class="led" aria-hidden="true"></span> Accepting new projects</span>
       </div>
@@ -62,13 +62,27 @@ const socialLabels: Record<string, string> = {
         <ul role="list" class="site-footer__contact">
           <li>
             <Icon name="mail" class="icon" />
-            <a href={`mailto:${site.email}`}>{site.email}</a>
+            <span class="site-footer__ci">
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+              <span class="site-footer__cl">Projects &amp; enquiries</span>
+            </span>
           </li>
+          {
+            site.supportEmail && (
+              <li>
+                <Icon name="headset" class="icon" />
+                <span class="site-footer__ci">
+                  <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
+                  <span class="site-footer__cl">Client support</span>
+                </span>
+              </li>
+            )
+          }
           {
             site.phone && (
               <li>
                 <Icon name="phone" class="icon" />
-                <a href={`tel:${site.phone.replace(/\s+/g, '')}`}>{site.phone}</a>
+                <a href={phoneHref}>{site.phone}</a>
               </li>
             )
           }
@@ -183,6 +197,16 @@ const socialLabels: Record<string, string> = {
     color: var(--fg-muted);
     font-size: 0.95rem;
     overflow-wrap: anywhere;
+  }
+
+  .site-footer__ci {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .site-footer__cl {
+    font-size: 0.8rem;
+    color: var(--fg-subtle);
   }
 
   .site-footer__contact :global(.icon) {

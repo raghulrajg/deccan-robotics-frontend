@@ -51,7 +51,20 @@ const organization = {
   slogan: 'From idea to working machine.',
   foundingDate: String(site.foundingYear),
   email: site.email,
-  ...(site.phone ? { telephone: site.phone } : {}),
+  ...(site.phone ? { telephone: site.phone.replace(/\s+/g, '') } : {}),
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      contactType: 'sales',
+      email: site.email,
+      ...(site.phone ? { telephone: site.phone.replace(/\s+/g, '') } : {}),
+      areaServed: 'Worldwide',
+      availableLanguage: ['English'],
+    },
+    ...(site.supportEmail
+      ? [{ '@type': 'ContactPoint', contactType: 'customer support', email: site.supportEmail }]
+      : []),
+  ],
   address: {
     '@type': 'PostalAddress',
     addressCountry: 'IN',
@@ -69,6 +82,10 @@ const organization = {
     'Machine vision',
     'Proof of concept development',
     'Hardware prototyping',
+    'Software development',
+    'Web and mobile app development',
+    'IoT platforms',
+    'Computer vision',
   ],
   ...(sameAs.length ? { sameAs } : {}),
 };

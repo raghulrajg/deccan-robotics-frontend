@@ -2,6 +2,7 @@
 import AmrMap from '@/components/illustrations/AmrMap.astro';
 import PcbBoard from '@/components/illustrations/PcbBoard.astro';
 import ConveyorLine from '@/components/illustrations/ConveyorLine.astro';
+import SoftwareStack from '@/components/illustrations/SoftwareStack.astro';
 import type { Illustration } from '@/data/services';
 
 interface Props {
@@ -14,3 +15,4 @@ const { name, class: className } = Astro.props;
 {name === 'amr' && <AmrMap class={className} />}
 {name === 'pcb' && <PcbBoard class={className} />}
 {name === 'conveyor' && <ConveyorLine class={className} />}
+{name === 'software' && <SoftwareStack class={className} />}

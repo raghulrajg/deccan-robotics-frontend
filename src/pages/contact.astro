@@ -2,10 +2,13 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/ui/PageHero.astro';
 import Icon from '@/components/ui/Icon.astro';
-import { site, locationLabel } from '@/config';
+import { site, locationLabel, phoneHref } from '@/config';
 import { breadcrumbSchema } from '@/lib/schema';
 
-const areas = ['Robotics', 'Embedded systems', 'Industrial automation', 'Not sure yet'];
+const areas = ['Robotics', 'Embedded systems', 'Industrial automation', 'Software development', 'Not sure yet'];
+const web3formsKey = site.form.web3formsKey.trim();
+// Where submissions go: a custom endpoint, Web3Forms, or (when both are empty) the visitor's email app.
+const endpoint = site.form.endpoint.trim() || (web3formsKey ? 'https://api.web3forms.com/submit' : '');
 const engagementTypes = ['Consulting', 'Proof of concept', 'Prototype', 'Not sure yet'];
 const steps = [
   { title: 'We read and reply', text: 'An engineer reads your note and replies with questions or a call invite.' },
@@ -25,7 +28,7 @@ const schema = [
 
 <BaseLayout
   title="Contact — Start a Project"
-  description="Tell Deccan Robotics about your robotics, embedded or automation project. We’ll reply with questions, a first view on feasibility and the fastest path to a working prototype."
+  description="Tell Deccan Robotics about your robotics, embedded, automation or software project. We’ll reply with questions, a first view on feasibility and the fastest path to a working prototype."
   schema={schema}
 >
   <PageHero
@@ -41,11 +44,12 @@ const schema = [
       <form
         class="form card"
         data-contact
-        data-endpoint={site.formEndpoint}
+        data-endpoint={endpoint}
+        data-provider={web3formsKey && !site.form.endpoint.trim() ? 'web3forms' : 'generic'}
         data-email={site.email}
-        action={site.formEndpoint || `mailto:${site.email}`}
+        action={endpoint || `mailto:${site.email}`}
         method="post"
-        enctype={site.formEndpoint ? 'multipart/form-data' : 'text/plain'}
+        enctype={endpoint ? 'multipart/form-data' : 'text/plain'}
         novalidate
       >
         <div class="form__head">
@@ -146,6 +150,15 @@ const schema = [
           <span>I’d like a mutual NDA before sharing details</span>
         </label>
 
+        {
+          web3formsKey && (
+            <>
+              <input type="hidden" name="access_key" value={web3formsKey} />
+              <input type="hidden" name="from_name" value={`${site.name} website`} />
+            </>
+          )
+        }
+
         <!-- spam trap: real visitors never see or fill this -->
         <div class="hp" aria-hidden="true">
           <label for="f-website">Website</label>
@@ -165,13 +178,23 @@ const schema = [
 
       <aside class="contact__aside" aria-label="Other ways to reach us">
         <div class="contact__block">
-          <p class="mono contact__label">Email</p>
+          <p class="mono contact__label">Projects &amp; enquiries</p>
           <a class="contact__email" href={`mailto:${site.email}`}>{site.email}</a>
+          {
+            site.supportEmail && (
+              <>
+                <p class="mono contact__label">Client support</p>
+                <a class="contact__email" href={`mailto:${site.supportEmail}`}>
+                  {site.supportEmail}
+                </a>
+              </>
+            )
+          }
           {
             site.phone && (
               <>
                 <p class="mono contact__label">Phone</p>
-                <a class="contact__email" href={`tel:${site.phone.replace(/\s+/g, '')}`}>
+                <a class="contact__email" href={phoneHref}>
                   {site.phone}
                 </a>
               </>
@@ -224,6 +247,7 @@ const schema = [
     const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
     const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
     const endpoint = form.dataset.endpoint?.trim();
+    const provider = form.dataset.provider;
     const email = form.dataset.email!;
     const required = [...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]')];
 
@@ -263,19 +287,34 @@ const schema = [
 
       const data = new FormData(form);
       if (value(data, '_gotcha')) return; // bot
+      const name = value(data, 'name');
+      const company = value(data, 'company');
+      const subject = `Project enquiry — ${name}${company ? ` (${company})` : ''}`;
 
       if (endpoint) {
+        // One clean field per question (checkbox groups joined), without the spam trap.
+        const payload = new FormData();
+        for (const key of new Set(data.keys())) {
+          if (key === '_gotcha') continue;
+          payload.set(key, data.getAll(key).map(String).join(', '));
+        }
+        payload.set(provider === 'web3forms' ? 'subject' : '_subject', subject);
+
         submit.disabled = true;
         submitLabel.textContent = 'Sending…';
         try {
           const res = await fetch(endpoint, {
             method: 'POST',
-            body: data,
+            body: payload,
             headers: { Accept: 'application/json' },
           });
-          if (!res.ok) throw new Error(String(res.status));
+          const json = await res.json().catch(() => null);
+          if (!res.ok || (json && json.success === false)) throw new Error(String(res.status));
           form.reset();
-          setStatus('ok', '<strong>Thanks — your message is on its way.</strong> We’ll get back to you shortly.');
+          setStatus(
+            'ok',
+            '<strong>Thanks — your message has been sent.</strong> We’ll get back to you by email shortly.',
+          );
         } catch {
           setStatus(
             'error',
@@ -289,8 +328,6 @@ const schema = [
       }
 
       // No form backend configured: hand the message to the visitor's email app.
-      const name = value(data, 'name');
-      const company = value(data, 'company');
       const details = [
         `Name: ${name}`,
         `Email: ${value(data, 'email')}`,
@@ -303,7 +340,6 @@ const schema = [
         value(data, 'nda') && 'NDA requested: Yes',
       ].filter((line): line is string => Boolean(line));
       const lines = [value(data, 'message'), '', '—', ...details];
-      const subject = `Project enquiry — ${name}${company ? ` (${company})` : ''}`;
       window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
       setStatus(
         'info',
@@ -508,6 +544,10 @@ const schema = [
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--fg-subtle);
+  }
+
+  .contact__label:not(:first-child) {
+    margin-top: var(--space-s);
   }
 
   .contact__email {

@@ -79,7 +79,7 @@ function ogPage(armSvg) {
       <div class="left">
         <div class="logo">${MARK}<div><div class="name">DECCAN</div><div class="sub">ROBOTICS</div></div></div>
         <h1>From idea to <span>working machine.</span></h1>
-        <p class="tag">Robotics, embedded systems &amp; industrial automation engineering</p>
+        <p class="tag">Robotics, embedded, automation &amp; software engineering</p>
         <div class="flow"><span><b>01</b> Consult</span>→<span><b>02</b> Prove</span>→<span><b>03</b> Prototype</span></div>
       </div>
       <div class="panel"><div class="bar"><span>SIM-01 · 3-axis palletiser</span><span><i></i>Live</span></div>${armSvg}</div>

@@ -1,0 +1,404 @@
+---
+/**
+ * Software illustration: code editor, live fleet dashboard, companion phone
+ * app and a CI/CD pipeline. CSS-only animation; the base styles are the
+ * finished state, so reduced-motion users see a completed pipeline.
+ */
+interface Props {
+  class?: string;
+  label?: string;
+}
+const {
+  class: className,
+  label = 'Code editor, live device dashboard, mobile app and a passing build pipeline',
+} = Astro.props;
+
+const uid = `sw-${Math.random().toString(36).slice(2, 8)}`;
+
+// Code lines: [x, width, colour] segments per line.
+const K = '#ff7a3d'; // keyword
+const F = '#c5cbd3'; // function / identifier
+const S = '#7fd4a5'; // string
+const V = '#8d96a3'; // variable
+const G = '#4a5361'; // punctuation / comment
+const code: [number, number, string][][] = [
+  [[52, 28, K], [84, 40, V], [128, 50, S]],
+  [[52, 30, K], [86, 62, F], [152, 20, G]],
+  [[64, 44, V], [112, 20, K], [136, 44, F]],
+  [[76, 74, S], [154, 30, G]],
+  [[76, 52, F], [132, 46, V]],
+  [[64, 34, K], [102, 26, G]],
+  [[52, 12, G]],
+  [],
+  [[52, 40, K], [96, 62, F]],
+];
+
+// Live chart: one periodic pattern drawn twice so it can scroll seamlessly.
+const X0 = 298;
+const W = 148;
+const pattern = [112, 104, 108, 97, 101, 92, 99, 90, 95, 104, 98, 112];
+const step = W / (pattern.length - 1);
+const pts = [...pattern, ...pattern.slice(1)].map((y, i) => `${(X0 + i * step).toFixed(1)} ${y}`);
+const line = `M${pts.join('L')}`;
+const area = `${line}L${X0 + 2 * W} 124L${X0} 124Z`;
+---
+
+<svg class:list={['ill', 'sw', className]} viewBox="0 0 480 320" role="img" aria-label={label}>
+  <defs>
+    <clipPath id={`${uid}-chart`}>
+      <rect x={X0} y="80" width={W} height="46"></rect>
+    </clipPath>
+    <linearGradient id={`${uid}-area`} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff5f1f" stop-opacity="0.35"></stop>
+      <stop offset="1" stop-color="#ff5f1f" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+
+  <rect x="10" y="10" width="460" height="300" rx="6" fill="var(--ill-bg)" stroke="var(--ill-line)"></rect>
+
+  <!-- code editor -->
+  <g>
+    <rect x="24" y="24" width="250" height="176" rx="6" class="sw__panel"></rect>
+    <path d="M24 44H274" stroke="var(--ill-line)"></path>
+    <circle cx="36" cy="34" r="3.5" fill="#313944"></circle>
+    <circle cx="48" cy="34" r="3.5" fill="#313944"></circle>
+    <circle cx="60" cy="34" r="3.5" fill="#313944"></circle>
+    <rect x="74" y="28" width="84" height="16" rx="3" fill="#1d2228"></rect>
+    <text x="82" y="39.5" class="ill__label">telemetry.ts</text>
+    {
+      code.map((segs, i) => (
+        <g>
+          <text x="34" y={62 + i * 15} class="ill__label ill__label--dim">
+            {i + 1}
+          </text>
+          {segs.map(([x, w, c]) => (
+            <rect x={x} y={56 + i * 15} width={w} height="6" rx="3" fill={c} opacity="0.85" />
+          ))}
+        </g>
+      ))
+    }
+    <rect x="162" y={54 + 8 * 15} width="2" height="10" fill="#ff7a3d" class="sw__cursor"></rect>
+  </g>
+
+  <!-- dashboard -->
+  <g>
+    <rect x="288" y="24" width="168" height="110" rx="6" class="sw__panel"></rect>
+    <text x="298" y="40" class="ill__label">FLEET · LIVE</text>
+    <circle cx="444" cy="37" r="3.5" fill="#3ddc84" class="sw__live"></circle>
+    <text x="298" y="62" class="sw__kpi">128</text>
+    <text x="298" y="73" class="ill__label ill__label--dim">devices</text>
+    <text x="364" y="62" class="sw__kpi">99.4%</text>
+    <text x="364" y="73" class="ill__label ill__label--dim">uptime</text>
+    <path d={`M${X0} 93H${X0 + W}M${X0} 108H${X0 + W}`} stroke="var(--ill-line)" stroke-dasharray="2 3"></path>
+    <g clip-path={`url(#${uid}-chart)`}>
+      <g class="sw__scroll">
+        <path d={area} fill={`url(#${uid}-area)`}></path>
+        <path d={line} fill="none" stroke="#ff7a3d" stroke-width="1.75" stroke-linejoin="round"></path>
+      </g>
+    </g>
+  </g>
+
+  <!-- phone app -->
+  <g>
+    <rect x="388" y="146" width="68" height="146" rx="11" fill="#161b20" stroke="var(--ill-strong)"></rect>
+    <rect x="414" y="151" width="16" height="4" rx="2" fill="#313944"></rect>
+    <text x="398" y="172" class="ill__label">DR-01</text>
+    <circle cx="438" cy="169" r="2.5" fill="#3ddc84"></circle>
+    <circle cx="422" cy="204" r="16" fill="none" stroke="#232931" stroke-width="5"></circle>
+    <circle
+      cx="422"
+      cy="204"
+      r="16"
+      fill="none"
+      stroke="#ff5f1f"
+      stroke-width="5"
+      stroke-linecap="round"
+      pathLength="100"
+      stroke-dasharray="72 100"
+      transform="rotate(-90 422 204)"></circle>
+    <text x="422" y="207.5" text-anchor="middle" class="sw__gauge">72%</text>
+    <rect x="398" y="236" width="48" height="16" rx="8" class="sw__track"></rect>
+    <circle cx="406" cy="244" r="6" fill="#fff" class="sw__knob"></circle>
+    <rect x="398" y="262" width="48" height="18" rx="4" fill="#1d2228"></rect>
+    <text x="422" y="274" text-anchor="middle" class="ill__label">SYNC</text>
+  </g>
+
+  <!-- CI/CD pipeline -->
+  <g>
+    <rect x="24" y="214" width="350" height="78" rx="6" class="sw__panel"></rect>
+    <text x="36" y="232" class="ill__label">CI · main · #128</text>
+    <text x="362" y="232" text-anchor="end" class="ill__label sw__passed">PASSED</text>
+    <path d="M90 262H190" class="sw__rail"></path>
+    <path d="M210 262H310" class="sw__rail"></path>
+    <path d="M90 262H190" pathLength="1" class="sw__link sw__link--1"></path>
+    <path d="M210 262H310" pathLength="1" class="sw__link sw__link--2"></path>
+    {
+      [
+        [80, 'BUILD'],
+        [200, 'TEST'],
+        [320, 'DEPLOY'],
+      ].map(([x, name], i) => (
+        <g class={`sw__stage sw__stage--${i + 1}`}>
+          <circle cx={x} cy="262" r="10" class="sw__node" />
+          <path d={`M${Number(x) - 4} 262l3 3 5-6`} class="sw__tick" />
+          <text x={x} y="286" text-anchor="middle" class="ill__label">
+            {name}
+          </text>
+        </g>
+      ))
+    }
+  </g>
+</svg>
+
+<style>
+  .sw__panel {
+    fill: #161b20;
+    stroke: var(--ill-line);
+  }
+
+  .sw__kpi {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    fill: #e6e8eb;
+  }
+
+  .sw__gauge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    fill: #e6e8eb;
+  }
+
+  .sw__passed {
+    fill: #3ddc84;
+  }
+
+  .sw__cursor {
+    animation: sw-blink 1.1s steps(2, jump-none) infinite;
+  }
+
+  .sw__live {
+    animation: sw-pulse 1.8s ease-in-out infinite;
+  }
+
+  .sw__scroll {
+    animation: sw-scroll 7s linear infinite;
+  }
+
+  .sw__track {
+    fill: #ff5f1f;
+    animation: sw-track 4s ease-in-out infinite;
+  }
+
+  .sw__knob {
+    transform: translateX(32px);
+    animation: sw-knob 4s ease-in-out infinite;
+  }
+
+  .sw__rail {
+    stroke: #313944;
+    stroke-width: 2;
+  }
+
+  .sw__link {
+    stroke: #2fb36e;
+    stroke-width: 2;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+  }
+
+  .sw__link--1 {
+    animation: sw-link-1 6s linear infinite;
+  }
+
+  .sw__link--2 {
+    animation: sw-link-2 6s linear infinite;
+  }
+
+  .sw__node {
+    fill: #2fb36e;
+  }
+
+  .sw__tick {
+    fill: none;
+    stroke: #0d0f12;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .sw__stage--1 .sw__node {
+    animation: sw-node-1 6s linear infinite;
+  }
+
+  .sw__stage--2 .sw__node {
+    animation: sw-node-2 6s linear infinite;
+  }
+
+  .sw__stage--3 .sw__node {
+    animation: sw-node-3 6s linear infinite;
+  }
+
+  .sw__stage--1 .sw__tick {
+    animation: sw-tick-1 6s linear infinite;
+  }
+
+  .sw__stage--2 .sw__tick {
+    animation: sw-tick-2 6s linear infinite;
+  }
+
+  .sw__stage--3 .sw__tick {
+    animation: sw-tick-3 6s linear infinite;
+  }
+
+  @keyframes sw-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sw-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @keyframes sw-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-148px);
+    }
+  }
+
+  @keyframes sw-track {
+    0%,
+    40% {
+      fill: #313944;
+    }
+    50%,
+    90% {
+      fill: #ff5f1f;
+    }
+    100% {
+      fill: #313944;
+    }
+  }
+
+  @keyframes sw-knob {
+    0%,
+    40% {
+      transform: translateX(0);
+    }
+    50%,
+    90% {
+      transform: translateX(32px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  /* Pipeline: pending (grey) → running (orange) → passed (green), 6 s loop */
+  @keyframes sw-node-1 {
+    0%,
+    8% {
+      fill: #313944;
+    }
+    10%,
+    26% {
+      fill: #ff5f1f;
+    }
+    28%,
+    100% {
+      fill: #2fb36e;
+    }
+  }
+
+  @keyframes sw-node-2 {
+    0%,
+    38% {
+      fill: #313944;
+    }
+    40%,
+    56% {
+      fill: #ff5f1f;
+    }
+    58%,
+    100% {
+      fill: #2fb36e;
+    }
+  }
+
+  @keyframes sw-node-3 {
+    0%,
+    68% {
+      fill: #313944;
+    }
+    70%,
+    84% {
+      fill: #ff5f1f;
+    }
+    86%,
+    100% {
+      fill: #2fb36e;
+    }
+  }
+
+  @keyframes sw-tick-1 {
+    0%,
+    27% {
+      opacity: 0;
+    }
+    28%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sw-tick-2 {
+    0%,
+    57% {
+      opacity: 0;
+    }
+    58%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sw-tick-3 {
+    0%,
+    85% {
+      opacity: 0;
+    }
+    86%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sw-link-1 {
+    0%,
+    28% {
+      stroke-dashoffset: 1;
+    }
+    38%,
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes sw-link-2 {
+    0%,
+    58% {
+      stroke-dashoffset: 1;
+    }
+    68%,
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

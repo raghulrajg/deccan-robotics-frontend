@@ -1,7 +1,7 @@
 {
   "name": "Deccan Robotics",
   "short_name": "Deccan",
-  "description": "Robotics, embedded systems & industrial automation engineering.",
+  "description": "Robotics, embedded, automation & software engineering.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

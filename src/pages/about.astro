@@ -37,7 +37,7 @@ const facts: [string, string][] = [
   ['Founded', String(site.foundingYear)],
   ['Based in', locationLabel],
   ['Works with', 'Teams worldwide'],
-  ['Disciplines', 'Robotics · Embedded · Automation'],
+  ['Disciplines', 'Robotics · Embedded · Automation · Software'],
 ];
 
 const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' }])];
@@ -45,13 +45,13 @@ const schema = [breadcrumbSchema(Astro.site, [{ label: 'About', href: '/about/' 
 
 <BaseLayout
   title="About"
-  description="Deccan Robotics is a robotics, embedded systems and industrial automation engineering studio from India, helping companies turn ambitious ideas into working machines."
+  description="Deccan Robotics is a robotics, embedded systems, industrial automation and software engineering studio from India, helping companies turn ambitious ideas into working machines."
   schema={schema}
 >
   <PageHero
     eyebrow="About us"
     title="Engineering with <em>deep foundations.</em>"
-    lead={`${site.name} is a robotics, embedded systems and automation engineering studio from India. We help companies turn ambitious ideas into machines that work — and keep working.`}
+    lead={`${site.name} is a robotics, embedded systems, automation and software engineering studio from India. We help companies turn ambitious ideas into machines that work — and keep working.`}
     crumbs={[{ label: 'About' }]}
     split
     seed={13}

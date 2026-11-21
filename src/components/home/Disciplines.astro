@@ -19,8 +19,8 @@ const { showHeader = true } = Astro.props;
           id="disciplines-title"
           index="01"
           eyebrow="What we do"
-          title="Three disciplines. <em>One integrated team.</em>"
-          lead="Hard problems live where mechanics, electronics and software meet. We cover the whole stack, so nothing falls through the gaps between vendors."
+          title="Four disciplines.<br /> <em>One integrated team.</em>"
+          lead="Hard problems live where mechanics, electronics and software meet. We cover the whole stack — from motors and circuit boards to cloud dashboards — so nothing falls through the gaps between vendors."
           align="split"
         />
       )
@@ -38,7 +38,7 @@ const { showHeader = true } = Astro.props;
                 <span class="icon-tile">
                   <Icon name={s.icon} />
                 </span>
-                <span class="mono disc__n">0{i + 1} / 03</span>
+                <span class="mono disc__n">0{i + 1} / 0{services.length}</span>
               </div>
               <h3 class="h3 disc__title">
                 <a href={href(`/services/${s.slug}/`)} class="disc__link">
@@ -52,7 +52,7 @@ const { showHeader = true } = Astro.props;
                 ))}
               </ul>
               <span class="text-link disc__more" aria-hidden="true">
-                Explore {s.name.toLowerCase()}
+                Learn more
                 <Icon name="arrow-right" strokeWidth={2} />
               </span>
             </div>
@@ -66,7 +66,7 @@ const { showHeader = true } = Astro.props;
 <style>
   .disc-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-m);
   }
 
@@ -161,30 +161,54 @@ const { showHeader = true } = Astro.props;
     transform: translateX(3px);
   }
 
-  @media (max-width: 1080px) {
+  /* Four across on wide screens; subgrid lines up titles, lists and links between cards. */
+  @media (min-width: 1200px) {
     .disc-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-m) 1.25rem;
     }
 
     .disc {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: none;
+      grid-row: span 6;
+      grid-template-rows: subgrid;
+      row-gap: var(--space-s);
     }
 
-    .disc__media {
-      padding: 0.6rem;
-      display: grid;
-      align-items: center;
+    .disc__body {
+      display: contents;
+    }
+
+    .disc__head,
+    .disc__title,
+    .disc__summary,
+    .disc__list,
+    .disc__more {
+      padding-inline: 1.35rem;
+    }
+
+    .disc__head {
+      padding-top: var(--space-s);
+    }
+
+    .disc__title {
+      margin-top: 0;
+      font-size: clamp(1.3rem, 1rem + 0.5vw, 1.5rem);
+    }
+
+    .disc__summary,
+    .disc__list {
+      font-size: 0.95rem;
+    }
+
+    .disc__more {
+      align-self: end;
+      padding-bottom: var(--space-l);
     }
   }
 
-  @media (max-width: 720px) {
-    .disc {
+  @media (max-width: 760px) {
+    .disc-grid {
       grid-template-columns: 1fr;
-    }
-
-    .disc__media {
-      padding-bottom: 0;
     }
   }
 </style>

@@ -270,6 +270,11 @@ export const tools = [
   'OPC UA',
   'MQTT',
   'LoRaWAN',
+  'React',
+  'Node.js',
+  'Flutter',
+  'AWS',
+  'Docker',
 ];
 
 /* ── General FAQs ───────────────────────────────────────────── */
