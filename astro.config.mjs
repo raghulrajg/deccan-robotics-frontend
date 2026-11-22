@@ -8,7 +8,11 @@ import sitemap from '@astrojs/sitemap';
  * (e.g. https://<user>.github.io/<repo>). The GitHub Actions workflow sets
  * both automatically; locally the defaults below are used.
  */
-const site = process.env.SITE_URL || 'https://deccanrobotics.in';
+// Always advertise HTTPS (GitHub reports http:// until "Enforce HTTPS" is ticked).
+const site = (process.env.SITE_URL || 'https://deccanrobotics.in').replace(
+  /^http:\/\/(?!localhost|127\.0\.0\.1)/,
+  'https://',
+);
 const base = process.env.BASE_PATH || '/';
 
 export default defineConfig({
