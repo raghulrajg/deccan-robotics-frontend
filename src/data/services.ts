@@ -31,7 +31,7 @@ export const services: Service[] = [
     illustration: 'amr',
     seoTitle: 'Robotics Engineering: AMRs, Manipulators & ROS 2 Development',
     seoDescription:
-      'Robot design, ROS 2 software, motion control, perception and system integration. Deccan Robotics takes mobile robots and manipulators from proof of concept to field-ready prototype.',
+      'Robot design, ROS 2 software, motion control, perception and integration. We take mobile robots and manipulators from proof of concept to field-ready prototype.',
     summary: 'Mobile robots, manipulators and the autonomy that drives them.',
     highlights: [
       'Robot design & system integration',
@@ -133,7 +133,7 @@ export const services: Service[] = [
     illustration: 'pcb',
     seoTitle: 'Embedded Systems: PCB Design, Firmware & IoT Product Development',
     seoDescription:
-      'Custom electronics and firmware: schematic and PCB design, bare-metal and RTOS firmware, sensors, connectivity, low-power design and OTA updates, from prototype to production-ready.',
+      'Custom electronics and firmware: PCB design, RTOS firmware, sensors, connectivity, low-power design and OTA updates, from prototype to production.',
     summary: 'Custom electronics and firmware that are reliable, efficient and connected.',
     highlights: [
       'Schematic & PCB design',
@@ -337,7 +337,7 @@ export const services: Service[] = [
     illustration: 'software',
     seoTitle: 'Software Development: Web & Mobile Apps, IoT Platforms & AI',
     seoDescription:
-      'Custom software for connected products and industry: web and mobile apps, IoT and cloud platforms, dashboards, integrations and AI, built by engineers who understand the hardware underneath.',
+      'Custom software for connected products: web and mobile apps, IoT and cloud platforms, dashboards, integrations and AI, built by engineers who know hardware.',
     summary: 'Web, mobile and cloud software that connects your machines to your business.',
     highlights: [
       'Web apps & dashboards',
