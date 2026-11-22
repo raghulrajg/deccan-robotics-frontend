@@ -17,12 +17,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    # Running in the github-pages environment makes its secrets available to the build too.
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out
         uses: actions/checkout@v5
@@ -48,15 +44,14 @@ jobs:
           if [ -n "$PUBLIC_WEB3FORMS_KEY" ]; then
             echo "Contact form: Web3Forms key configured"
           else
-            echo "::warning::WEB3FORMS_KEY was not found (Settings → Secrets and variables → Actions); the contact form will fall back to the visitor's email app."
+            echo "::warning::Repository secret WEB3FORMS_KEY was not found (Settings → Secrets and variables → Actions); the contact form will fall back to the visitor's email app."
           fi
           npm run build
         env:
           # Works for project sites (https://<user>.github.io/<repo>/) and custom domains alike.
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
-          # Kept out of the repository. Read from a repository or github-pages environment
-          # secret named WEB3FORMS_KEY, or from a variable with the same name.
+          # Kept out of the repository: repository secret (or variable) named WEB3FORMS_KEY.
           PUBLIC_WEB3FORMS_KEY: ${{ secrets.WEB3FORMS_KEY || vars.WEB3FORMS_KEY }}
 
       - name: Upload artifact
@@ -64,6 +59,13 @@ jobs:
         with:
           path: dist
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
