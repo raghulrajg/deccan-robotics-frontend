@@ -16,6 +16,19 @@ import { faqs } from '@/data/content';
 import { site } from '@/config';
 import { href } from '@/lib/url';
 
+// Tells Google the site's name ("Deccan Robotics") for the line above search results.
+const siteRoot = new URL(href('/'), Astro.site).toString();
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${siteRoot}#website`,
+  name: site.name,
+  alternateName: ['DeccanRobotics', 'deccanrobotics.in'],
+  url: siteRoot,
+  inLanguage: 'en-IN',
+  publisher: { '@id': `${siteRoot}#organization` },
+};
+
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -28,10 +41,10 @@ const faqSchema = {
 ---
 
 <BaseLayout
-  title={`${site.name} · Robotics, Embedded, Automation & Software Engineering`}
+  title={`${site.name} · Robotics, Embedded, Automation & Software`}
   rawTitle
   description="Deccan Robotics is an engineering studio for robotics, embedded systems, industrial automation and software. Consulting, proofs of concept and prototypes."
-  schema={[faqSchema]}
+  schema={[websiteSchema, faqSchema]}
 >
   <Hero />
   <ToolsMarquee />
